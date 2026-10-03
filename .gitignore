@@ -1,0 +1,27 @@
+# 编译产物 / 可执行文件
+*.exe
+*.o
+*.obj
+*.out
+a.exe
+hello.exe
+hi.exe
+h.exe
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# 编辑器与系统
+.vscode/.history/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# 本工具的工作目录
+.workbuddy/
