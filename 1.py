@@ -738,29 +738,48 @@ while current_number < 10:
 # 按Ctrl + C可以强制退出程序
 
 
+# 2026.10.3
+# 使用while循环来处理列表和字典
+# 在列表之间移动数据
 
+# 首先创建一个待验证的用户列表和一个用于存储已验证用户的空列表
+unconfirmed_users = ['alice', 'brian', 'candace']   # 待验证的用户列表
+confirmed_users = []   # 已验证的用户列表
 
+# 验证每个用户，直到没有未验证的用户为止
+# 将每个经过验证的列表都移到已验证用户列表中
+while unconfirmed_users:   # 只要unconfirmed_users列表非空，就一直循环
+    current_user = unconfirmed_users.pop()   # pop()方法删除列表末尾的元素，并返回该元素的值
+    print(f'Verifying user: {current_user.title()}')   # 打印验证信息
+    confirmed_users.append(current_user)   # 将已验证的用户添加到已验证用户列表中
+# 显示所有已验证的用户
+print('\nThe following users have been confirmed:')
+for confirmed_user in confirmed_users:   # 遍历已验证用户列表
+    print(confirmed_user.title())   # 打印已验证用户的名字
+print(f'The following users have been confirmed: {", ".join(confirmed_users).title()}.')   # 打印已验证用户的名字，使用join()方法将列表转换为字符串，并用逗号分隔
+# 这里title()必须放在join()后面，因为join()返回的是一个字符串，title()方法只能用于字符串
 
+# 删除为特定值的所有列表元素
+pets = ['dog', 'cat', 'dog', 'goldfish', 'cat', 'rabbit', 'cat']
+print(pets)
+while 'cat' in pets:   # 只要列表中还有'cat'，就一直循环
+    pets.remove('cat')   # remove()方法删除列表中第一个出现的指定值
+print(pets)   # 打印删除后的列表
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# # 使用用户输入来填充字典
+# responses = {}   # 创建一个空字典，用于存储用户的回答
+# polling_active = True   # 设置一个标志，用于控制循环
+# while polling_active:   # 只要polling_active为True，就一直循环
+#     name = input('\nWhat is your name? ')   # 获取用户的名字
+#     response = input('Which mountain would you like to climb someday? ')   # 获取用户的回答
+#     responses[name] = response   # 将用户的名字和回答存储到字典中
+#     repeat = input('Would you like to let another person respond? (yes/no) ')   # 询问是否有其他人要回答
+#     if repeat == 'no':   # 如果没有其他人要回答，就将polling_active设置为False，退出循环
+#         polling_active = False
+# # 显示调查结果
+# print('\n--- Poll Results ---')
+# for name, response in responses.items():
+#     print(f"{name}: {response}")
 
 
 

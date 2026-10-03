@@ -461,7 +461,7 @@ for name, palce in favorite_place.items():
 # 练习6.10 喜欢的数2
 dictionary = {'Tom': [3,1], 'Jerry': [12,213,31], 'Jack': 53, 'Bob': 34, 'Mana': 0}
 for name, numbers in dictionary.items():
-    if isinstance(numbers,list):
+    if isinstance(numbers,list):        # isinstance()函数判断numbers是不是列表类型
         print(f'{name} like {"、".join(map(str,numbers))}')
     else:
         print(f'{name} like {numbers}')
@@ -577,21 +577,76 @@ for city, message in cities.items():
 # 练习7.7: 无限循环
 # while True:
 #     print('无限循环\n按Ctrl + C可以强制退出程序')
+# 2026.10.3
+# 练习7.8: 熟食店
+sandwich_orders = ['pastrami', 'beef', 'chicken', 'pastrami', 'pork', 'pastrami']
+finished_sandwiches = []
+for sandwich in sandwich_orders:
+    print(f'I made your {sandwich} sandwich.')
+while sandwich_orders:
+    finished_sandwich = sandwich_orders.pop()   # pop()方法默认删除列表最后一个元素，并返回这个元素
+    finished_sandwiches.append(finished_sandwich)   # append()方法把这个元素添加到另一个列表中
+print(f'We have made the following sandwiches: {", ".join(finished_sandwiches)}.')
+for sandwich in finished_sandwiches:
+    print(f'We have made the following sandwiches: {sandwich}.')
+# 练习7.9: 五香烟熏牛肉卖完了
+sandwich_orders = ['pastrami', 'beef', 'chicken', 'pastrami', 'pork', 'pastrami']
+print('Sorry, we have run out of pastrami.')
+while 'pastrami' in sandwich_orders:   # 判断列表中是否有指定元素
+    sandwich_orders.remove('pastrami')   # remove()方法删除列表中指定元素
+print(sandwich_orders)
+# # 练习7.10: 梦想中的度假胜地
+# key_values = {}  # 初始化一个空字典，用来存储“名字: 地点”的数据
 
+# while True:  # 【大循环】：负责不断让新朋友输入信息，直到用户选 No 或输入 quit
+    
+#     # 1. 输入名字
+#     names = input('请输入名字:(输入"quit"退出程序)\n输入:')
+#     if names == 'quit':
+#         break  # 如果输入 quit，直接打破大循环，结束整个程序
+        
+#     # 2. 输入地点
+#     places = input('如果你可以去任何地方度假，你想去哪里？:(输入"quit"退出程序)\n输入:')
+#     if places == 'quit':
+#         break  # 如果输入 quit，直接打破大循环，结束整个程序
+    
+#     # 3. 存入字典（关键点！）
+#     # 你的直觉非常准：必须在问“是否继续”之前存字典。
+#     # 因为如果放在后面，用户选 No 触发了 break，代码就直接跳过这句，数据就丢失了！
+#     key_values[names] = places  
 
+#     # 4. 小循环：专门负责“卡住”用户，直到输入合法的 Yes 或 No
+#     is_continue = False  # 标记变量：默认不继续（即准备结束程序）
+#     while True:  # 【小循环】
+#         friends = input("你还有朋友想要参与调查吗？:('Yes'或'No')\n输入:")  
+#         # 注：你的注释很棒，只要里面有单引号，外面就必须用双引号，反之亦然
+        
+#         if friends == 'Yes':
+#             is_continue = True  # 用户表示还要继续，把标记设为 True
+#             break               # 打破小循环
+#         elif friends == 'No':
+#             is_continue = False # 用户表示不继续了，标记保持 False
+#             break               # 打破小循环
+#         else:
+#             # 如果输入了其它东西，不 break，不 continue，
+#             # 循环会自动回到内层 while True 的开头，重新问这个问题！
+#             print('输入错误，请重新输入。')
 
+#     # 5. 小循环结束后，利用刚才的标记，决定大循环的命运
+#     if not is_continue:  # 如果 is_continue 是 False（用户选了 No）
+#         break  # 打破大循环，整个输入环节结束
+    
+#     # 如果用户选了 Yes (is_continue 是 True)，
+#     # 代码会什么都不做，自然走到大循环末尾，自动回到第一行，开始问下一个人的名字！
 
-
-
-
-
-
-
-
-
-
-
-
+# # 6. 打印最终结果
+# for name, place in key_values.items():
+#     # .title() 会把每个单词的首字母变成大写，比如 "beijing" 变成 "Beijing"
+#     print(f'{name.title()}想去{place.title()}度假。')
+# # break 只会彻底终结它当前所在的“当下层级”的循环，它在寻找目标时会无视所有 if 等非循环缩进，
+# # 顺着缩进往上找遇到的第一个 while 或 for 就是它唯一的击杀目标，它绝不越级打破外层循环（外层若想结束必须在其内部再写一个 break），
+# # 并且打破内层后代码只是跳出内层，依然会留在外层循环体内继续往下执行或自然回滚到外层开头，绝不等于 continue 的仅跳过本次循环。
+# # 主要看它到底在哪层循环里面，也要注意看它到底跳出了哪层循环，它在不在那层循环里面.
 
 
 
