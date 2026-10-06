@@ -782,7 +782,167 @@ print(pets)   # 打印删除后的列表
 #     print(f"{name}: {response}")
 
 
+# 2026.10.4
+# 函数的定义和调用
+# 定义函数
+def greet_user():   # 定义一个函数，函数名为greet_user，括号内为空，表示没有参数，以冒号收尾
+    """显示简单的问候语"""   # 文档字符串(docstring)的注释，描述函数的功能，缩进三个引号括起来，放在函数定义的下一行
+    print("Hello!")   # 打印问候语
+# 调用函数
+greet_user()
 
+# 向函数传递信息
+def greet_user(username):   # 定义一个函数，函数名为greet_user，括号内有一个参数username，以冒号收尾
+    """显示简单的问候语"""   # 文档字符串(docstring)的注释，描述函数的功能，缩进三个引号括起来，放在函数定义的下一行
+    print(f"Hello, {username.title()}!")   # 打印问候语，使用f-string格式化字符串，将username变量的值插入到字符串中，并将其首字母大写
+
+greet_user('jesse')   # 调用函数，传递一个实参'jesse'给参数username，这种没有默认值的参数称为必备参数(positional argument)，调用函数时必须传递实参，否则会报错
+
+# 实参和形参
+# 形参(parameter)是函数定义中括号内的变量名，用于接收调用函数时传递的实参(argument)，实参是调用函数时传递给形参的值
+def describe_pet(animal_type, pet_name):   # 定义一个函数，函数名为describe_pet，括号内有两个参数animal_type和pet_name，以冒号收尾
+    """显示宠物的信息"""   # 文档字符串(docstring)的注释，描述函数的功能，缩进三个引号括起来，放在函数定义的下一行
+    print(f"\nI have a {animal_type}.")   # 打印宠物类型，使用f-string格式化字符串，将animal_type变量的值插入到字符串中
+    print(f"My {animal_type}'s name is {pet_name.title()}.")   # 打印宠物名字，使用f-string格式化字符串，将pet_name变量的值插入到字符串中，并将其首字母大写 
+describe_pet('dog', 'da huang')   # 要输入两个实参
+
+# 传递实参
+# 位置实参(positional argument)是按顺序传递给函数的实参，调用函数时必须按照形参的顺序传递实参，否则会报错
+# 关键字实参(keyword argument)是通过指定形参的名称来传递给函数的实参，调用函数时可以不按照形参的顺序传递实参
+
+# 位置实参
+def describe_pet(animal_type, pet_name):   # 定义一个函数，函数名为describe_pet，括号内有两个参数animal_type和pet_name，以冒号收尾
+    """显示宠物的信息"""   # 文档字符串(docstring)的注释，描述函数的功能，缩进三个引号括起来，放在函数定义的下一行
+    print(f"\nI have a {animal_type}.")   # 打印宠物类型，使用f-string格式化字符串，将animal_type变量的值插入到字符串中
+    print(f"My {animal_type}'s name is {pet_name.title()}.")   # 打印宠物名字，使用f-string格式化字符串，将pet_name变量的值插入到字符串中，并将其首字母大写 
+describe_pet('dog', 'da huang')   # 要按顺序输入两个实参
+describe_pet('cat', 'da bai')     # 可以多次调用函数，传递不同实参
+
+# 关键字实参
+def describe_pet(animal_type, pet_name):   # 定义一个函数，函数名为describe_pet，括号内有两个参数animal_type和pet_name，以冒号收尾
+    """显示宠物的信息"""   # 文档字符串(docstring)的注释，描述函数的功能，缩进三个引号括起来，放在函数定义的下一行
+    print(f"\nI have a {animal_type}.")   # 打印宠物类型，使用f-string格式化字符串，将animal_type变量的值插入到字符串中
+    print(f"My {animal_type}'s name is {pet_name.title()}.")
+
+describe_pet(animal_type='hamster', pet_name='harry')   # 关键字实参，调用函数时可以不按照形参的顺序传递实参
+# 注意:在使用关键字实参时，务必准确地指定函数定义的形参名
+
+# 默认值
+# 可以给每个形参指定默认值，如果调用函数时给形参提供了实参，Python将使用指定的实参；否则，将使用形参的默认值
+def describe_pet(pet_name, animal_type='dog'):   # 给animal_type指定默认值'dog'
+    '''显示宠物的信息'''
+    print(f"\nI have a {animal_type}.")   # 打印宠物类型，使用f-string格式化字符串，将animal_type变量的值插入到字符串中
+    print(f"My {animal_type}'s name is {pet_name.title()}.")
+describe_pet(pet_name='willie')   # 调用函数时只传递了pet_name实参，使用animal_type的默认值'dog'
+describe_pet('willie')   # 也可以只传递一个实参，使用    
+describe_pet('willie', 'cat')   # 调用函数时传递了两个实参，覆盖了animal_type的默认值
+
+# 2026.10.5
+# 等效的函数调用
+def describe_pet(pet_name, animal_type='dog'):  # 这种定义任何时候都必须传递pet_name实参，在指定实参时，既可用位置实参，也可用关键字实参
+    print(f"\nI have a {animal_type}.")   # 打印宠物类型，使用f-string格式化字符串，将animal_type变量的值插入到字符串中
+    print(f"My {animal_type}'s name is {pet_name.title()}.")
+# 一条名为Willie的狗
+describe_pet('willie')  # 位置实参
+describe_pet(pet_name='willie') # 关键字实参
+# 一条名为Harry的仓鼠
+describe_pet('harry', 'hamster')  # 位置实参,不必在意有默认值的形参，直接写就行
+describe_pet(pet_name='harry', animal_type='hamster')  # 关键字实参
+describe_pet(animal_type='hamster', pet_name='harry')  # 关键字实参，顺序可以颠倒
+
+# 避免实参错误
+# traceback首先指出错误类型，再指出错误出现在什么地方，然后指出错误的函数调用，最后指出函数调用缺少的实参
+
+# 2026.10.6
+# 返回值，函数并非总是直接显示输出，他还可以处理一些数据，并返回一个或一组值，这被称为返回值。可以使用return直接调用函数的那行代码
+# 返回简单的值
+def get_formatted_name(first_name, last_name):
+    '''返回标准格式的名字'''
+    full_name = f'{first_name.title()} {last_name.title()}'
+    return full_name.title()    # return语句让函数返回一个值，并结束函数的执行。返回值可以赋给变量，也可以直接使用
+musician = get_formatted_name('jimi', 'hendrix')   # 调用函数，并将返回值赋给变量musician
+print(musician)   # 打印变量musician的值
+
+# 让实参变成可选的
+def get_formatted_name(first_name, last_name, middle_name=''):   # 给middle_name指定默认值为空字符串，因为下面调用函数时可能没有传递middle_name实参
+    '''返回标准格式的名字'''
+    if middle_name:   # 如果middle_name不为空字符串，就将其加入到full_name中
+        full_name = f'{first_name.title()} {middle_name.title()} {last_name.title()}'
+    else:   # 如果middle_name为空字符串，就只返回first_name和last_name
+        full_name = f'{first_name.title()} {last_name.title()}'  # 就算if没用到middle_name,下面调用函数的时候还是会在定义去找，所以必须middle_name=''，不然没实参报错
+    return full_name.title()
+musician = get_formatted_name('jimi', 'hendrix')   # 调用函数时只传递了first_name和last_name实参，使用middle_name的默认值为空字符串
+print(musician)   # 打印变量musician的值
+musician = get_formatted_name('john', 'hooker', 'lee')   # 调用函数时传递了三个实参，覆盖了middle_name的默认值为空字符串
+print(musician)   # 打印变量musician的值
+
+# 返回字典
+def build_person(first_name, last_name):
+    '''返回一个字典，其中包含有关一个人的信息'''
+    person = {'first': first_name, 'last': last_name}   # 创建一个字典，包含first_name和last_name,不加引号是因为可以把形参看为变量，后面给实参时加上就行了
+    return person   # 返回字典
+musician = build_person('jimi', 'hendrix')   # 调用函数，并将返回值赋给变量musician
+print(musician)
+# · return 一执行，函数立即结束 → 后面写什么都白搭
+# · 想打印返回值 → 在调用处打印（用变量接，或直接塞进 print）
+# · 在函数体里 return 后面打印 → 永远轮不到
+
+# 补充字典添加用法(.update()方法)
+# update 传字典
+d = {'a': 1}
+d.update({'b': 2})          # d = {'a': 1, 'b': 2}
+
+# update 传关键字参数
+d = {'a': 1}
+d.update(b=2, c=3)          # d = {'a': 1, 'b': 2, 'c': 3}
+
+# update 传可迭代的键值对（列表/元组）
+d = {'a': 1}
+d.update([('b', 2), ('c', 3)])   # d = {'a': 1, 'b': 2, 'c': 3}
+[('b', 2), ('c', 3)]      # 列表，里面装元组
+(('b', 2), ('c', 3))      # 元组，里面装元组
+
+# update 直接传 zip
+d = {'a': 1}
+d.update(zip(['b', 'c'], [2, 3]))   # d = {'a': 1, 'b': 2, 'c': 3}
+keys   = ['b', 'c']
+values = [2, 3]
+zip(keys, values)   # 配出来是 ('b', 2) 和 ('c', 3) ，讲究一个对一个，短的直接舍弃
+
+# update 不覆盖已有的写法（配合循环判断）
+d = {'a': 1}
+d.update({'a': 99})         # d = {'a': 99}，同名会被覆盖
+
+
+# 扩展函数，修改存储年龄
+def build_person(first_name, last_name, age=None):  # 由于可能不填age，而且age一般填数字，所以给一个None既可判断又不会因为没写实参报错
+    '''返回一个字典其中包含一个人的信息'''
+    person = {'first': first_name, 'last': last_name}
+    if age:   # 做判断，如果age不为空则进行下一步加入字典
+        person['age'] = age      # 标准的加入字典
+    return person
+musician = build_person('jimi', 'hendrix', age=34)
+print(musician)
+
+# 函数内部定义的局部变量（含形参）只活在函数里、外面看不见，想送出去必须用 return；而函数外部定义的全局变量，函数内可以直接读，但要修改它必须加 global 声明。
+
+
+# # 结合使用函数和while循环
+# def get_formatted_name(first_name, last_name):
+#     '''返回规范格式的姓名'''
+#     full_name = f'{first_name.title()} {last_name.title()}'
+#     return full_name.title()
+# # 这是一个无限循环
+# while True:
+#     print('\nPlease tell me your name:')
+#     f_name = input("First name:(按'exit'退出)\n")
+#     if f_name == 'exit':
+#         break
+#     l_name = input("Last name:(按'exit'退出)\n")
+#     if l_name == 'exit':
+#             break
+#     formatted_name = get_formatted_name(f_name, l_name)
+#     print(f'Hello , {formatted_name}')
 
 
 

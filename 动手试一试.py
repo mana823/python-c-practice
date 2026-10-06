@@ -648,6 +648,99 @@ print(sandwich_orders)
 # # 并且打破内层后代码只是跳出内层，依然会留在外层循环体内继续往下执行或自然回滚到外层开头，绝不等于 continue 的仅跳过本次循环。
 # # 主要看它到底在哪层循环里面，也要注意看它到底跳出了哪层循环，它在不在那层循环里面.
 
+# 练习8.1: 消息
+def display_message():
+    """显示学习的内容"""
+    print('I learn functions in this chapter.')
+display_message()
+# 练习8.2: 喜欢的书
+def favorite_book(title):
+    '''显示喜欢的书籍'''
+    print(f'One of my favorite books is {title}.')
+favorite_book('Alice in Wonderland')  # 调用函数时，实参是字符串，必须加引号
+
+# 2026.10.5
+# 练习8.3: T恤
+def make_shirt(size, text):
+    print(f'The size of the T-shirt is {size}, and the text on it is "{text}".')
+make_shirt('L', 'I love Python')  # 调用函数时，实参是字符串，必须加引号
+make_shirt(text='I love Python', size='L')  # 调用函数时，实参是字符串，必须加引号
+# Python变量无需声明、赋值即创建、动态类型、可重新绑定，命名须以字母或下划线开头后接字母/数字/下划线，区分大小写且不能用关键字。
+# 练习8.4: 大号T恤
+make_shirt('M', 'I love Python')  # 调用函数时，实参是字符串，必须加引号
+make_shirt(text=10086, size='5XL')  # 调用函数时，实参是数字，不需要加引号
+# 练习8.5: 城市
+def describe_city(city, country='China'):
+    print(f'{city.title()} is in {country.title()}.')
+describe_city('beijing')
+describe_city('changsha')
+describe_city('tokyo', 'japan')
+
+# 2026.10.6
+# 练习8.6: 城市名
+def city_country(city, country):
+    message = f'"{city.title()}, {country.title()}"'  # f放在最前面，且与后面不能又空格
+    return message
+print(city_country('santiago', 'chile'))
+# 练习8.7: 专辑
+def make_album(name1, name2, age=None):
+    dictionary = {'歌手': name1.title(), '专辑': name2.title()}
+    if age:
+        dictionary['age'] = age
+    return dictionary
+a = make_album('mana', 'fase', 18)
+print(a)
+# 练习8.8: 用户的专辑
+# def make_album(name1, name2, age=None):
+#     dictionary = {'歌手': name1.title(), '专辑': name2.title()}
+#     if age:
+#         dictionary['age'] = age
+#     return dictionary
+# while True:
+#     name1_ = input('歌手是谁？\t"q"退出\n')
+#     if name1_ == 'q':
+#         break
+#     name2_ = input('专辑是什么？\t"q"退出\n')
+#     if name2_ == 'q':
+#         break
+#     age = input('年龄？\t"q"退出\n')
+#     if age == 'q':
+#         break
+#     a = make_album(name1_, name2_, age)
+#     print(a)
+##  函数能不能引用某个变量，看的是“这个变量在函数被调用的时候，是不是已经存在了”，而不是“它在函数的上面还是下面”。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
