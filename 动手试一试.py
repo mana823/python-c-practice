@@ -710,22 +710,73 @@ print(a)
 #     print(a)
 ##  函数能不能引用某个变量，看的是“这个变量在函数被调用的时候，是不是已经存在了”，而不是“它在函数的上面还是下面”。
 
+# 2026.10.7
+# 练习8.9: 消息
+def show_messages(x):
+    for message in x:
+        print(message)
+messages = ['fhsdakj', 'fhaksj', 'dffs', 'vhsd']
+show_messages(messages)
+# 练习8.10: 发送消息
+def show_messages(x):
+    for message in x:
+        print(message)                   # 看原列表
+        sent_messages.append(message)   # 把里面的元素一个个追加，且不改变原来的列表
+def send_messages(lists):
+    print(lists)
+    print(messages)
+    if lists == messages:           # 因为是一个个追加，不改变顺序，直接可以做判断对比，不要用reverse()，这个直接原地改变，返回空
+        print('消息正确')
+sent_messages = []
+show_messages(messages)
+send_messages(sent_messages)
+# 练习 8.10
+def show_messages(messages):
+    """打印所有消息"""
+    for message in messages:
+        print(message)
 
+def send_messages(messages, sent_messages):
+    """打印消息，并把它移到 sent_messages"""
+    while messages:
+        current = messages.pop()
+        print(f"发送：{current}")
+        sent_messages.append(current)
 
+# 先准备数据
+messages = ['fhsdakj', 'fhaksj', 'dffs', 'vhsd']
+sent_messages = []
 
+# 调用
+send_messages(messages, sent_messages)   # 搬走消息
+show_messages(sent_messages)             # 看搬走的结果
 
+print("原列表：", messages)               # 空了
+print("新列表：", sent_messages)          # 有内容
 
+# 练习8.11: 消息归档
+def show_messages(messages):
+    for message in messages:
+        print(message)
+def send_messages(messages, sent_messages):
+    while messages:
+        current = messages.pop()        # 因为是pop()下面作比较要用reverse()反转
+        print(f"发送：{current}")
+        sent_messages.append(current)
+# 先准备数据
+messages = ['fhsdakj', 'fhaksj', 'dffs', 'vhsd']
+sent_messages = []
 
+# 调用
+send_messages(messages[:], sent_messages)   # 搬走消息，用副本
+show_messages(messages)                  # 看原来的
+show_messages(sent_messages)             # 看搬走的结果
 
-
-
-
-
-
-
-
-
-
+print("原列表：", messages)               # 不变
+print("新列表：", sent_messages)          # 有内容
+sent_messages.reverse()               # 返回空，原地改变列表
+if sent_messages == messages:
+    print('无误')
 
 
 

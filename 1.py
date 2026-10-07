@@ -944,8 +944,71 @@ print(musician)
 #     formatted_name = get_formatted_name(f_name, l_name)
 #     print(f'Hello , {formatted_name}')
 
+# 2026.10.7
+# 传递列表
+def greet_users(names):    # 拿到列表实参
+    '''向列表中的用户发出简单的问候'''
+    for name in names:     # 相当于把列表中元素一个个提取出来
+        msg = f"Hello, {name.title()}"
+        print(msg)
+user_names = ['mana', 'li hua', 'tom']    # 这是列表
+greet_users(user_names)                   # 实参直接传递列表，整体是一个实参
 
+# 在函数中修改列表
+# 首先创建一个列表，其中包含一些要打印的设计
+unprinted_designs = ['phone case', 'robot pendant', 'dodecahedron']
+completed_models = []
+# 模拟打印每个设计，直到没有未打印的设计为止
+while unprinted_designs:     # unprinted_designs不被搬空，就一直循环
+    current_design = unprinted_designs.pop()            # current中文意思当前的
+    print(f"Printing model: {current_design}")   
+    completed_models.append(current_design)           # 将pop()的元素追加至新列表
+# 显示打印好的所有模型
+print(f"\nThe following models have been printed:")
+for completed_model in completed_models:
+# 这里的completed_model后不能用title(),for 后面的变量，作用是挨个接住序列里的元素，它是一个赋值位置，不是一个“可以运算的表达式”。    
+    print(completed_model.title())
 
+# 重新组织这些代码，编写两个函数，让每个都做具体的工作
+def print_models(unprinted_designs, completed_models):
+    '''模拟打印每个设计，直到没有未打印的设计为止
+    打印每个设计后，都将其移到completed_models中'''
+    while unprinted_designs:
+        current_design = unprinted_designs.pop()            # current中文意思当前的
+        print(f"Printing model: {current_design}")   
+        completed_models.append(current_design)      # 调用加入的是外部变量，改的是‘可变对象内部’，所以外部会变。不用加global     
+# 可变对象：能把里面的内容原地改了，变量还指着原来那个。
+# 不可变对象：改不了内部，想变只能让变量指个新的。
+# 后者看起来就像“普通变量”那样，赋值一次换一个。
+def show_completed_models(completed_models):
+    '''显示打印好的所有模型'''
+    print(f"\nThe following models have been printed:")
+    for completed_model in completed_models:
+# 这里的completed_model后不能用title(),for 后面的变量，作用是挨个接住序列里的元素，它是一个赋值位置，不是一个“可以运算的表达式”。    
+        print(completed_model.title())
+
+unprinted_designs = ['phone case', 'robot pendant', 'dodecahedron']
+completed_models = []
+# print_models(unprinted_designs, completed_models)    # 先注释掉，下面的副本调用要用到
+# show_completed_models(completed_models)              # 先注释掉，下面的副本调用要用到
+# 1. 先想清楚：这个函数要从外面拿什么（输入），要还给外面什么（输出）
+# 2. 从外面拿的 → 写进形参
+# 3. 自己内部用的临时变量 → 不用写形参，直接在函数体里定义
+# 4. 要给外面的 → 用 return 送出去
+# 形参不是“函数里用到啥就写啥”，而是“从外面传进来的才写”。名字不能乱起，要让人一眼看懂。
+# 先把事写出来，再整理成函数，最后把定义挪上去——这是非常正规的写代码流程。你一上来就想“先定义好函数”，反而会卡死，因为你还没想清楚下面要干嘛。
+
+# 禁止函数修改变量
+# function_name(list_name[:])   #将列表的副本传给函数   function意思是函数
+
+# 如果不想清空未打印的设计列表，可以像下面这样调用print_models()
+print_models(unprinted_designs[:], completed_models)    # unprinted_designs[:]用的是副本，不会改变原来的列表
+show_completed_models(completed_models)
+print(unprinted_designs)              # 无变化
+print(completed_models)               # 有变化,如果也传的副本就没变化
+print(unprinted_designs[:])            # 看不到被pop()搬空的列表了
+# 副本就是为了不改变原件，而把数据传给形参。
+# 形参定流程，实参填值，填进去就走那套流程。
 
 
 
