@@ -1,4 +1,7 @@
 # name = 'ada lovelace'
+from dataclasses import field
+
+
 name = 'ada lovelace'
 print(name.title())  # .title() 是把首字母换成大写
 print(name.upper())  # .upper() 全大写 .lower()全小写
@@ -1009,6 +1012,131 @@ print(completed_models)               # 有变化,如果也传的副本就没变
 print(unprinted_designs[:])            # 看不到被pop()搬空的列表了
 # 副本就是为了不改变原件，而把数据传给形参。
 # 形参定流程，实参填值，填进去就走那套流程。
+
+# 2026.10.8
+# 传递任意数量的实参
+def make_pizza(*toppings):   # 形参名*toppings让Python创建一个名为toppings的元组，该元组包含函数收到的所有值
+    """打印顾客点的所有配料"""
+    print(toppings)         # print()函数可以处理元组
+make_pizza('pepperoni')   # ('pepperoni',)  把实参封装到元组中，即便一个函数只收到一个值也是如此
+make_pizza('mushrooms', 'green peppers', 'extra cheese')   # ('mushrooms', 'green peppers', 'extra cheese')
+
+def make_pizza(*toppings):
+    """概述要制作的比萨"""
+    print("\nMaking a pizza with the following toppings:")
+    for topping in toppings:    # 因为把元组里面的元素一个个取出来了，所以打印没引号和方括号
+        print(f"- {topping}")
+make_pizza('pepperoni')
+make_pizza('mushrooms', 'green peppers', 'extra cheese')
+
+# 结合使用位置实参和任意数量实参
+# 如果要让函数接受不同类型的实参，必须在函数定义中将接受任意数量实参的形参放在最后。Python先匹配位置实参和关键字实参，
+# 再将余下的实参都收集到最后一个形参中。
+def make_pizza(size, *toppings):   # 两个形参，接受任意数量实参的形参放在最后(*toppings)
+    '''概述要制作的比萨'''
+    print(f"\nMaking a {size}-inch pizza with the following toppings:")
+    for topping in toppings:
+        print(f"- {topping}")
+make_pizza(16, 'pepperoni')    # 如果不是for……in……取了元素，'pepperoni'照样打印元组  
+make_pizza(12, 'mushrooms', 'green peppers', 'extra cheese')
+
+# 使用任意数量的关键字实参
+# 可将函数编写成能够接受任意数量的键值对————调用语句提供了多少就接受多少
+def build_profile(first, last, **user_info):   # **user_info，是搞一个字典定义里面字典名就是它
+    """创建一个字典，其中包含我们知道的有关用户的一切"""
+# 给实参当一个数据就行了，他能在函数定义里面干很多事
+    user_info['first_name'] = first    # 这是新增字典，所以键值在后面
+    user_info['last_name'] = last      # 这是新增字典，所以键值在后面
+    return user_info     # 把字典返回出去接住
+user_profile = build_profile('albert', 'eistein',
+                             location='printceton',
+                             field='physics')   # location='printceton', field='physics'任意数量字典实参
+print(user_profile)
+# location='princeton' 里的 location 是“参数名”，不加引号；它作为键进到字典里时，Python 自动把它变成字符串 'location'。
+# 你不能写 'location'='princeton'，因为字符串不能当参数名。
+# location='princeton' 就是关键字实参；**user_info 专门用来“收集任意多个关键字实参，打包成字典”。
+# 参数名（location）自动变成字典的键，不带引号；值（'princeton'）是字符串，带引号。
+
+# * 收“一堆位置实参” → 元组；** 收“一堆关键字实参” → 字典。
+# 传几个收几个，专门处理“不知道会传多少”的情况。
+
+
+# 2026.10.8
+# 将函数存储在模块中(用import语句)
+# 导入整个模块。模块是扩展名为.py的文件，包含要导入程序的代码，现在我创建一个(pizza.py),在同目录
+import pizza     # 导入pizza.py   用pizza. 可以调用它的代码函数
+pizza.make_pizza(16, 'pepperoni')
+pizza.make_pizza(12, 'mushrooms', 'green peppers', 'extra cheese')
+# · pizza：导入的模块名（pizza.py）
+# · make_pizza：模块里的函数
+# · . ：点号，表示“到 pizza 这个模块里找”
+# · (...)：调用这个函数，把参数传进去
+# 模块名.函数名(参数) = 调用“某个模块里的某个函数”。pizza. 就是“到 pizza 模块里找”。
+
+# 导入特定的函数
+# 可以只导入模块中特定的函数
+# from pizza import function_name    # 没有的函数会报错
+from pizza import make_pizza
+# from pizza import function_name   <-- 在pizza模块中导入function_name函数
+# 用逗号分隔函数名，可根据需要从模块中导入任意数量的函数: from pizza import function_0, function_1, function_2
+# 如果只想导入要使用的函数，代码类似这样:
+from pizza import make_pizza
+make_pizza(16, 'pepperoni')   # 这样导入模块特定函数，不需要再点出模块名了，直接用函数就行了
+make_pizza(12, 'mushrooms', 'green peppers', 'extra cheese')
+
+# 使用as给函数指定别名，指定独一无二的别名(alias)
+# 下面给make_pizza()函数指定了别名mp()
+from pizza import make_pizza as mp   
+mp(16, 'pepperoni')
+mp(12, 'mushrooms', 'green peppers', 'extra cheese')
+# import 模块 as 别名 = 给整个模块起新名字。
+# from 模块 import 函数 as 别名 = 给某个函数起新名字。
+# 都能用 as，看你想改谁的名。
+
+# 使用as给模块指定别名
+import pizza as p   # 把模块加载进来，只用p这个名字引用它，所以不能用原来模块名字，除非再调用一次
+p.make_pizza(16, 'pepperoni')
+p.make_pizza(12, 'mushrooms', 'green peppers', 'extra cheese')
+# 可以同时改两个，只建议模块调用函数，直接调用特定函数本来就不用写模块名
+
+# 使用(*)导入模块中的所有函数，写大模型不建议，会有重名的函数，Python会互相覆盖
+from pizza import *      # 可再次调用pizza(原模块)，*代表调用所有，在这里是通配符
+make_pizza(16, 'pepperoni')   # 这样导入模块所有函数，不需要再点出模块名了，直接用函数就行了
+make_pizza(12, 'mushrooms', 'green peppers', 'extra cheese')
+
+
+# 蟒蛇书第8.7节“函数编写指南”要求给函数起描述性名字且仅用小写字母和下划线，在def行后紧跟文档字符串注释，
+# 形参默认值和关键字实参赋值时等号两边不加空格，程序内用两个空行分隔相邻函数，所有import语句置于文件开头，并建议函数精简以不超过50行为宜。
+# def function_name(parameter_0, parameter_1='default value')  <--这里的默认形参等号不空格
+# function_name(value_o, parameter_1='value')   <--这里的关键字实参等号不空格
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

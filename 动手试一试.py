@@ -1,4 +1,7 @@
 # 练习2.1
+from shlex import join
+
+
 a = 'jfgaoips'
 print(a)
 
@@ -778,26 +781,65 @@ sent_messages.reverse()               # 返回空，原地改变列表
 if sent_messages == messages:
     print('无误')
 
+# 2026.10.8
+# 练习8.12: 三明治
+def foods(*food):
+    for food_ in food:
+        print(f"You want to {food_}?")
+foods('pizza')        
+foods('pizza', 'egg')
+foods('pizza', 'egg', 'hotdog')
+# 解包符*
+def foods(*food):
+    print(f"You want to :",*food, sep=',')  # 不用中间逗号，Python会认为字符串相乘，可以用join()
+foods('pizza')        
+foods('pizza', 'egg')
+foods('pizza', 'egg', 'hotdog')
+# join()
+def foods(*food):
+    print(f"You want to {','.join(food)}")
+foods('pizza')        
+foods('pizza', 'egg')
+foods('pizza', 'egg', 'hotdog')
 
+# 练习8.13: 用户简介
+def build_profile(first, last, **user_info):   # **user_info，是搞一个字典定义里面字典名就是它
+    """创建一个字典，其中包含我们知道的有关用户的一切"""
+# 给实参当一个数据就行了，他能在函数定义里面干很多事
+    user_info['first_name'] = first.title()    # 这是新增字典，所以键值在后面
+    user_info['last_name'] = last.title()      # 这是新增字典，所以键值在后面
+    return user_info     # 把字典返回出去接住
+user_profile = build_profile('ma', 'na',
+                            location='earth',
+                            field='cn')
+print(user_profile)
+# 字符串方法，只要对象是字符串，随时随地都能调。但换成数字、列表、字典、视图对象，就没这些方法了——方法“长在类型身上”。
 
+# 练习8.14: 汽车
+def make_car(name, modle, **others):
+    others['name'.title()] = name.title()
+    others['modle'] = modle.title()
+    return others
+car = make_car('subaru', 'outback', color='blue', tow_package=True)  # True是布尔值，不用加引号
+print(car)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# 2026.10.8
+# 练习8.15: 打印模型
+import printing_functions as o
+b = []           # 这些变量注意写在调用函数上面
+a = ['fdf', 'fds', 'gd']
+o.print_(a, b)          # 相当于把模块整个代码引用过来，再在下面调用
+o.show_(b)
+# 练习8.16: 导入
+import pizza
+from pizza import make_pizza
+from printing_functions import *
+import pizza as e
+#  from printing_functions import * as p     <--报错* 是通配符，代表“所有名字”，它不是一个具体的名字，所以没法给它起别名。
+# as 只能给“具体的名字”改名
+from  printing_functions import print_ as p
+# 练习8.17: 函数编写指南
+pass  # (略)
 
 
 
