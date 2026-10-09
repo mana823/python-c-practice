@@ -841,6 +841,56 @@ from  printing_functions import print_ as p
 # 练习8.17: 函数编写指南
 pass  # (略)
 
+# 2026.10.9
+# 练习9.1: 餐馆
+class Restaurant:    # 分类
+    def __init__(self, restaurant_name, cuisine_type):   # 特殊方法
+        self.name = restaurant_name
+        self.type = cuisine_type
+    def describe_restaurant(self):
+        print(f"The restaurant name is {self.name}.")   # 内部调用只要用self(变量)
+    def open_restaurant(self):
+        print("正在营业")
+restaurant = Restaurant('MANA', 'doufu')   # 创建实例引入变量，导入实参
+print(restaurant.name)  # 打印属性
+print(restaurant.type)
+restaurant.describe_restaurant()
+restaurant.open_restaurant()
+# 方法只有 self 时，调用括号空着；
+# 方法除 self 外还有别的形参时，调用时才补上那些参数。
+# self 里的数据，方法内部直接用，不用外面传。
+
+# 练习9.2: 三家餐厅
+a = Restaurant('BOB', 'huoguo')
+b = Restaurant('TOM', 'rousi')
+c = Restaurant('JIM', 'hongshaorou')
+a.describe_restaurant()
+b.describe_restaurant()
+c.describe_restaurant()
+# 练习9.3: 用户
+class User:
+    def __init__(self, first_name, last_name):
+        self.first = first_name
+        self.last = last_name
+# __init__ 里写 print，一造实例就自动打印。但一般不这么写，打印放别的方法，你想打才打。基本就是来传参数的  
+    def describe_user(self):
+        print(f"Username is {self.first.title()} {self.last.title()} ")
+    def greet_user(self, question):
+        print(f"Do you like {question}?")
+user_a = User('ma', 'na')
+user_b = User('li', 'hua')
+user_a.describe_user()
+user_b.greet_user('free')   # 多余参数自己补
+
+
+
+
+
+
+
+
+
+
 
 
 

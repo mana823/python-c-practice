@@ -96,7 +96,7 @@ print(列表)
 cars = ['bmw', 'audi', 'toyota', 'subaru']
 cars.sort()    # 按英文字母顺序排列，修改表，返回None    'sort'的中文意思是排序
 print(cars)
-cars.sort(reverse=True)  # reverse=True  按英文字母逆序排列  'reverse'中文意思是反转，默认是reverse=Falsa
+cars.sort(reverse=True)  # reverse=True  按英文字母逆序排列  'reverse'中文意思是反转，默认是reverse=False
 print(cars)
 # 2.使用sorted()临时排序        # sorted()是一个函数
 cars = ['bmw', 'audi', 'toyota', 'subaru']
@@ -1111,20 +1111,79 @@ make_pizza(12, 'mushrooms', 'green peppers', 'extra cheese')
 # function_name(value_o, parameter_1='value')   <--这里的关键字实参等号不空格
 
 
+# 2026.10.9
+# 第九章: 类
+# 面向对象编程(OOP)，编写现实情景的类(class)，并基于这些来创建对象(object)
+# 9.1 创建和使用类
+# 9.1.1 创建Dog类   赋予每条小狗坐下(sit())和打滚(roll_over())的能力
+class Dog:    # 定义一个名为Dog的类,约定上，我们再python中类名称首字母大写,但小写一样合法
+    """一次模拟小狗的简单尝试"""     # 同样是用三个引号注释提示
+    def __init__(self, name, age):  # 这个self(当然也只是一个名称)必不可少，且位于其他形参前面，这个形参是Python传递实例用的
+        """初始化属性name和age"""
+        self.name = name    # 把右边的实参name传递存入(被引用)到实例的name(变量)属性里去
+        self.age = age    # 这两个在__init__方法内定义的变量都有前缀self，可供类中所有方法使用(使用时用完整变量名)，可通过任意实例来访问
+    def sit(self):
+        """模拟小狗收到命令时坐下"""
+        print(f"{self.name} is now sitting." )
+    def roll_over(self):
+        """模拟小狗收到命令时打滚"""
+        print(f"{self.name} rolled over!")
+# __init__()方法
+# 类中的函数称方法，与前面的唯一重要差别是调用的方法的方式
+# __init__()是一个特殊方法，每当你根据Dog类创建新实例时，Python都会自动运行它
+# 在这种方法名称中开头和结尾的两个下划线是一种约定，避免Python默认方法与普通方法发生名称冲突
+class Dog:
+    def __init__(self, name):
+        self.name = name
 
+    def bark(self):     # 这里的第一个形参self也是被塞进实例
+        print(f"{self.name} 在叫")   # 这里的self.name可供类中所有方法使用(使用时用完整变量名)
 
+my_dog = Dog('旺财')     # 造实例，装进变量，后面的调用函数用这个变量调用
+my_dog.name              # 访问属性 → '旺财'  必须先存进实例，才能访问 --> self.name = name
+my_dog.bark()            # 访问方法 → 打印“旺财 在叫”
+# 类主要是防止在这一段函数下参数过多且要频繁的去传递，所以把它用class分类，用__init__打包，
+# 之后实例赋给变量后用它去调用方法，class和init只是工具，真正还是给def函数方法铺路
 
+# 所以class和__init__只要出现一次就行了，当然，你多次打包也没问题，多次分类也没问题，不过在一个函数运作体系中没必要
 
+# 根据类创建实例
+class Dog:    # 定义一个名为Dog的类,约定上，我们再python中类名称首字母大写,但小写一样合法
+    """一次模拟小狗的简单尝试"""     # 同样是用三个引号注释提示
+    def __init__(self, name, age):  # 这个self(当然也只是一个名称)必不可少，且位于其他形参前面，这个形参是Python传递实例用的
+        """初始化属性name和age"""
+        self.name = name    # 把右边的实参name传递存入(被引用)到实例的name(变量)属性里去
+        self.age = age    # 这两个在__init__方法内定义的变量都有前缀self，可供类中所有方法使用(使用时用完整变量名)，可通过任意实例来访问
+    def sit(self):
+        """模拟小狗收到命令时坐下"""
+        print(f"{self.name} is now sitting." )
+    def roll_over(self, number):  # 在类函数方法中，第一个形参必须是接实例的位置
+        """模拟小狗收到命令时打滚"""
+        print(f"{self.name} rolled {number}!")
+my_dog = Dog('willie', 6)      # 开始造实例，用变量my_dog引用
+print(f"My dog's name is {my_dog.name}.")   # 调用,(self.name = name是把实参name传入实例名叫name的变量中。my_dog.name只是在实例里面提取name)
+print(f"My dog is {my_dog.name}")
+# · self：定义里第一个形参，代表“当前实例”，Python 自动传
+# · name（右边）：形参名，接住外面传进来的值，比如 '旺财'
+# · self.name（左边）：你给实例起属性名叫 name，把右边的值存进去
+# my_dog.name = 从 my_dog 这个实例里，取出之前存进去的 name 属性。
+# 不是“把 my_dog 当 self”，是“从实例身上取属性”。
 
-
-
-
-
-
-
-
-
-
+# 1.访问属性
+print(my_dog.name)   # 先找到实例my_dog，再查找与这个实例相关的属性name
+# 2.调用方法
+my_dog.sit()         # 指定实例名和想调用的方法，并用句号分隔
+my_dog.roll_over(3)  # (self, number)这两个形参，一个留给实例，拿到__init__实参，一个自己补充
+# 实例 = 调用类里方法的通行证，同时自带 __init__ 存好的数据，还不能直接自己下面去调用。方法用实例的数据，方法必须在类里定义好，新参数自己补。
+# 3.创建多个实例
+your_dog = Dog('Lucy', 3)    # 开始搞新的实例了，里面的实参不一样了，存入的数据方式一样，但是内容不同
+print(f"My dog's name is {your_dog.name}.")
+# 一旦存进实例，只要实例还在，没被改，实例.属性 取出来永远是那个值。
+# 这就是实例属性的“持久性”。
+# 但注意：能跨代码访问的是 your_dog.name，不是光写 name。
+print(f"My dog is {your_dog.age} years old.")
+your_dog.sit()
+your_dog.roll_over(4)  # 和上面是一样的,实例没有的额外形参自己去补
 
 
 
