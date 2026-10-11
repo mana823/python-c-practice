@@ -1185,16 +1185,671 @@ print(f"My dog is {your_dog.age} years old.")
 your_dog.sit()
 your_dog.roll_over(4)  # 和上面是一样的,实例没有的额外形参自己去补
 
+# 2026.10.10
+# 使用类和实例
+# 使用car类
+# ============================================================
+# 第一部分：位置实参和关键字实参混用
+# ============================================================
+
+class Car:
+    """一次模拟汽车的简单尝试"""
+
+    def __init__(self, make, model, year):
+        # __init__ 不能变，Python 只认这个
+        """初始化汽车属性"""
+        self.make = make
+        self.model = model
+        self.year = year
+
+    def get_descriptive_name(self):       
+        """返回格式规范的描述性信息"""
+        long_name = f"{self.year} {self.make} {self.model}"
+        return long_name.title()
+
+
+my_new_car = Car('audi', year=2025, model='a4')
+# 第一个位置实参，后两个关键字实参，且位置调换
+# 位置实参和关键字实参可以混用
+# 但位置实参必须全部写在前面，关键字实参写在后面
+# 反过来（关键字在前、位置在后）会报错
+# 这是语法硬规定，跟“覆不覆盖”无关
+
+print(my_new_car.get_descriptive_name())
+# 不写括号，打印的是方法对象本身，不是返回值
+
+# return 的值，你可以接，也可以不接
+# 不接，直接 print 能看到；接了，才能继续用
+# “看到”和“拿到”，是两回事
+
+
+# ============================================================
+# 第二部分：给属性指定默认值
+# ============================================================
+
+class Car:
+    """一次模拟汽车的简单尝试"""
+
+    def __init__(self, make, model, year):
+        # __init__ 不能变，Python 只认这个
+        """初始化汽车属性"""
+        self.make = make
+        self.model = model
+        self.year = year
+        self.odometer_reading = 0
+        # 创建一个变量，用默认值存储到实例
+        # 下面的方法可以用 self.odometer_reading 访问
+
+    def get_descriptive_name(self):
+        """返回格式规范的描述性信息"""
+        long_name = f"{self.year} {self.make} {self.model}"
+        return long_name.title()
+
+    def read_odometer(self):
+        """打印一条指出汽车行驶里程的信息"""
+        print(f"This car has {self.odometer_reading} miles on it.")
+
+
+my_new_car = Car('audi', 'a4', 2024)
+print(my_new_car.get_descriptive_name())
+my_new_car.read_odometer()
+
+
+# ============================================================
+# 第三部分：修改属性的值
+# 方法一：直接修改属性的值
+# ============================================================
+
+class Car:
+    """一次模拟汽车的简单尝试"""
+
+    def __init__(self, make, model, year):
+        """初始化汽车属性"""
+        self.make = make
+        self.model = model
+        self.year = year
+        self.odometer_reading = 0
+
+    def get_descriptive_name(self):
+        """返回格式规范的描述性信息"""
+        long_name = f"{self.year} {self.make} {self.model}"
+        return long_name.title()
+
+    def read_odometer(self):
+        """打印一条指出汽车行驶里程的信息"""
+        print(f"This car has {self.odometer_reading} miles on it.")
+
+
+my_new_car = Car('audi', 'a4', 2024)
+print(my_new_car.get_descriptive_name())
+
+my_new_car.odometer_reading = 23
+# 这里用“实例.变量名”直接修改属性值
+
+my_new_car.read_odometer()
+# 调用含改变属性值的方法看效果
+
+
+# ============================================================
+# 方法二：通过方法修改属性的值
+# ============================================================
+
+class Car:
+    """一次模拟汽车的简单尝试"""
+
+    def __init__(self, make, model, year):
+        """初始化汽车属性"""
+        self.make = make
+        self.model = model
+        self.year = year
+        self.odometer_reading = 0
+
+    def get_descriptive_name(self):
+        """返回格式规范的描述性信息"""
+        long_name = f"{self.year} {self.make} {self.model}"
+        return long_name.title()
+
+    def read_odometer(self):
+        """打印一条指出汽车行驶里程的信息"""
+        print(f"This car has {self.odometer_reading} miles on it.")
+
+    def update_odometer(self, mileage):
+        # 加入 mileage 主要是为了调用时用实参修改
+        # 没有它，就只能写死在方法里改
+        """将里程表读数设置为指定的值"""
+        self.odometer_reading = mileage
+        # 相当于重新存储（被引用）了一个值
+        # 这个值可以在调用时自己给实参
+
+
+my_new_car = Car('audi', 'a4', 2024)
+print(my_new_car.get_descriptive_name())
+
+my_new_car.update_odometer(23)
+# 先运行这个函数，改变属性的值
+
+my_new_car.read_odometer()
+# 最后调用含改变属性值的方法看效果
+
+# 同一个实例，改了就一直是改后的值，除非你再改
+# 新实例是新的，跟旧实例互不影响
+# “只要不添新实例，这个变量就一直改”
+# 注意：这句话只对“同一个实例”有效，不是对所有实例有效
+# 每个实例有自己的一份属性，互不干扰
+
+# __init__ 跑一次，属性存住
+# 后面 self 就是调用者本身
+# 只有 self 的方法：不能从外面拿到新值，但能给实例加/改属性
+
+
+# ============================================================
+# 方法二加强版：禁止回调
+# ============================================================
+
+class Car:
+    """一次模拟汽车的简单尝试"""
+
+    def __init__(self, make, model, year):
+        """初始化汽车属性"""
+        self.make = make
+        self.model = model
+        self.year = year
+        self.odometer_reading = 0
+
+    def get_descriptive_name(self):
+        """返回格式规范的描述性信息"""
+        long_name = f"{self.year} {self.make} {self.model}"
+        return long_name.title()
+
+    def read_odometer(self):
+        """打印一条指出汽车行驶里程的信息"""
+        print(f"This car has {self.odometer_reading} miles on it.")
+
+    def update_odometer(self, mileage):
+        """
+        将里程表读数设置为指定的值
+        禁止将里程表读数往回调
+        """
+        if mileage >= self.odometer_reading:
+            # 改的值不能小于以前的值
+            self.odometer_reading = mileage
+        else:
+            print("You can't roll back an odometer!")
+
+
+# ============================================================
+# 方法三：通过方法让属性的值递增
+# ============================================================
+
+class Car:
+    """一次模拟汽车的简单尝试"""
+
+    def __init__(self, make, model, year):
+        """初始化汽车属性"""
+        self.make = make
+        self.model = model
+        self.year = year
+        self.odometer_reading = 0
+
+    def get_descriptive_name(self):
+        """返回格式规范的描述性信息"""
+        long_name = f"{self.year} {self.make} {self.model}"
+        return long_name.title()
+
+    def read_odometer(self):
+        """打印一条指出汽车行驶里程的信息"""
+        print(f"This car has {self.odometer_reading} miles on it.")
+
+    def update_odometer(self, mileage):
+        """
+        将里程表读数设置为指定的值
+        禁止将里程表读数往回调
+        """
+        if mileage >= self.odometer_reading:
+            self.odometer_reading = mileage
+        else:
+            print("You can't roll back an odometer!")
+
+    def increment_odometer(self, miles):
+        # 原来写的是 increment_odometer(a, miles)，第一个形参用 a
+        # 第一位形参叫什么都行，照样能接实例、能存属性
+        # 但为了别人看懂，还是写 self 最稳
+        """让里程表读数增加指定的量"""
+        self.odometer_reading += miles
+
+
+my_new_car = Car('subaru', 'outback', 2019)
+print(my_new_car.get_descriptive_name())
+
+my_new_car.update_odometer(23_500)
+# 更改默认属性，23_500 = 23500
+my_new_car.read_odometer()
+
+my_new_car.increment_odometer(100)
+# 增加里程数
+my_new_car.read_odometer()
+# 再读取里程数
+
+
+# ============================================================
+# 重点总结
+# ============================================================
+
+# 1. 位置实参和关键字实参可以混用
+#    但位置实参必须在前面，关键字实参在后面
+#    反过来会报错
+
+# 2. 方法调用要加括号
+#    my_car.get_descriptive_name()   ← 调用，拿返回值
+#    my_car.get_descriptive_name     ← 不调用，只是方法对象
+
+# 3. 属性可以三种方式改：
+#    - 直接改：my_car.odometer_reading = 23
+#    - 通过方法改：my_car.update_odometer(23)
+#    - 通过方法递增：my_car.increment_odometer(100)
+
+# 4. self 就是当前实例的入口
+#    方法里靠 self 来读、存、改这个实例的数据
+#    第一位形参叫什么都行，但写 self 是约定，最稳
+
+# 5. __init__ 只跑一次，属性存到实例上
+#    后面所有方法都通过 self 访问这些属性
+#    每个实例有自己独立的一份属性，互不影响
+
+# 6. 同一实例改了就一直是改后的值
+#    新实例是新的，跟旧实例互不影响
+#    “只要不添新实例就一直改”这句话只对同一个实例成立
+
+# 2026.10.11
+# 9.3 继承
+# 如果要编写的类是一个既有类的特殊版本，可使用继承(inheritance)。当一个类继承一个类时，将自动获得后者的所有属性和方法。
+# 原有的叫父类(parent class)，而新类称为子类(child class)。子类不仅继承所有属性方法，还可以自己定义
+# 9.3.1 子类的__init__()方法
+class Car:
+    """一次模拟汽车的简单尝试"""
+
+    def __init__(self, make, model, year):
+        # __init__ 不能改名，Python 只认这个
+        # self 是当前实例，make/model/year 是形参
+        # 属性全挂在 self 上，没有父子之分
+        """初始化汽车属性"""
+        self.make = make
+        self.model = model
+        self.year = year
+
+        # 创建一个变量，用默认值存储到实例
+        # 下面的方法可以用 self.odometer_reading 访问
+        self.odometer_reading = 0
+
+    def get_descriptive_name(self):
+        """返回格式规范的描述性信息"""
+        long_name = f"{self.year} {self.make} {self.model}"
+        return long_name.title()
+
+    def read_odometer(self):
+        """打印一条指出汽车行驶里程的信息"""
+        print(f"This car has {self.odometer_reading} miles on it.")
+
+    def update_odometer(self, mileage):
+        # 加入 mileage 是为了调用时用实参修改
+        # 没有它，就只能写死在方法里改
+        """
+        将里程表读数设置为指定的值
+        禁止将里程表读数往回调
+        """
+        if mileage >= self.odometer_reading:
+            # 改的值不能小于以前的值
+            self.odometer_reading = mileage
+        else:
+            print("You can't roll back an odometer!")
+
+    def increment_odometer(self, miles):
+        # 原来写的是 (a, miles)，第一个形参必须是 self
+        # 原来函数体也没写，补上
+        """让里程表读数增加指定的量"""
+        self.odometer_reading += miles
+
+
+# ============================================================
+# 子类 ElectricCar
+# ============================================================
+
+# 创建子类时，父类必须已经定义或导入
+# 同文件时放在子类前面；不在同文件要先 import
+class ElectricCar(Car):
+    # 必须在括号里指定父类名称
+    """电动汽车的独特之处"""
+
+    def __init__(self, make, model, year, battery=75):
+        # 子类可以自己加参数，自己初始化新属性
+        # 多出来的参数放在父类参数后面
+        # 前面几个对应父类，后面几个是自己扩展
+
+        # 子类形参不能比父类必需参数少接
+        # 父类必需参数 = make, model, year
+        # 子类就至少要接住这三个，否则 super() 里没变量可用
+        # 父类有默认值的参数，子类也可以少接、少传
+
+        # super() 是子类手里的对讲机，用来呼叫父类
+        # super().__init__(...) 就是调用父类的 __init__
+        # 父类需要的必需参数一个都不能少，少了报 TypeError
+        # 父类有默认值的参数可以少传
+
+        # 传参两种都行：
+        #   位置实参：super().__init__(make, model, year)
+        #   关键字实参：super().__init__(make=make, model=model, year=year)
+        #     等号左边是父类形参名，必须和父类 def 里的名字一致
+        #     等号右边是子类变量名，必须和子类 def 里的形参一致
+
+        super().__init__(make, model, year)
+
+        # 父类执行完返回子类，子类继续往下走
+        # self 还是同一个实例，父类属性已经挂好了
+        # 这行是子类自己新增的属性，父类没有
+        self.battery = battery
+        # 子类新增属性写在哪都行，只要它的值不依赖父类属性。
+        # 依赖父类属性，就必须放 super() 后面；不依赖，前后都行。
 
 
 
+# ============================================================
+# 实例化和调用
+# ============================================================
+
+my_leaf = ElectricCar('nissan', 'leaf', 2024)
+
+# 调用父类的方法
+# 父类方法里的 self 就是 my_leaf
+# 能取到 make/model/year，因为 super().__init__ 已经挂好了
+print(my_leaf.get_descriptive_name())
+
+# 子类自己的属性也能用
+print(f"Battery: {my_leaf.battery}-kWh")
 
 
+# ============================================================
+# 完整执行顺序（针对 my_leaf = ElectricCar('nissan', 'leaf', 2024)）
+# ============================================================
+
+# 1. Python 调用 ElectricCar.__new__(ElectricCar) 造一个空实例 my_leaf
+#    此时 my_leaf 什么属性都没有
+#
+# 2. Python 调用 ElectricCar.__init__(my_leaf, 'nissan', 'leaf', 2024)
+#    my_leaf 是 Python 自动作为第一个实参传进去的，对应 self
+#
+# 3. 进入子类 ElectricCar.__init__（就是子类 def __init__()）
+#    形参接住值：
+#       self    = my_leaf
+#       make    = 'nissan'
+#       model   = 'leaf'
+#       year    = 2024
+#       battery = 75（默认值）
+#
+# 4. 执行 super().__init__(make, model, year)
+#    相当于 Car.__init__(my_leaf, 'nissan', 'leaf', 2024)
+#    my_leaf 自动作为父类的 self 传进去
+#
+# 5. 进入父类 Car.__init__
+#    形参接住值：
+#       self  = my_leaf（同一个实例）
+#       make  = 'nissan'
+#       model = 'leaf'
+#       year  = 2024
+#    执行：
+#       self.make = make        → my_leaf.make = 'nissan'
+#       self.model = model      → my_leaf.model = 'leaf'
+#       self.year = year        → my_leaf.year = 2024
+#       self.odometer_reading = 0 → my_leaf.odometer_reading = 0
+#    父类执行完，返回子类
+#
+# 6. 回到子类，继续执行 super() 后面的代码：
+#       self.battery = battery → my_leaf.battery = 75
+#
+# 7. 子类 __init__ 结束，返回
+#
+# 8. my_leaf 初始化完成，身上有：
+#       my_leaf.make             = 'nissan'
+#       my_leaf.model            = 'leaf'
+#       my_leaf.year             = 2024
+#       my_leaf.odometer_reading = 0
+#       my_leaf.battery          = 75
+#    全部挂在同一个 my_leaf 上
 
 
+# ============================================================
+# 重点总结
+# ============================================================
+
+# 1. 属性全是实例自己的，都挂在同一个 self 上
+#    “父类属性”只是口语，指“写在父类 __init__ 里的那几行 self.xxx = xxx”
+
+# 2. 创建子类实例时，Python 先 __new__ 造空壳，再调用子类 __init__ 初始化
+
+# 3. 子类 __init__ 只负责设置子类自己的属性
+#    父类属性需要子类主动调 super().__init__(...) 才会被设置
+
+# 4. 不写 super().__init__() 的后果：
+#    父类属性不存在，父类方法一调用就 AttributeError
+#    （除非你完全不需要父类方法，那可以不写）
+
+# 5. super() 里的变量就是子类 __init__ 的形参
+#    变量名必须和子类 def 里的形参名一致
+#    如果按关键字写，关键字名必须是父类的形参名
+
+# 6. 子类 def __init__ 的参数不能比父类少接：
+#    - 父类必需参数，子类必须接住并传过去，少一个就报错
+#    - 父类有默认值的参数，可以少接也可以少传
+#    - 子类可以多接自己的参数（比如 battery）
+
+# 7. def 定义时只写形参名，没有“关键字”一说
+#    调用函数时才能用关键字参数，关键字名匹配被调用函数的形参名
+
+# 8. 继承不是复制粘贴，是实时引用父类
+#    父类的方法改了，子类立刻用新的
+
+# 9. super() 不是把父类代码复制过来
+#    而是让父类用当前这个 self 把父类那部分属性设置一遍
 
 
+# 9.3.2 给子类定义属性和方法
+class Car:
+    """一次模拟汽车的简单尝试"""
 
+    def __init__(self, make, model, year):
+        """初始化描述汽车的属性"""
+        self.make = make
+        self.model = model
+        self.year = year
+        self.odometer_reading = 0
+
+    def get_descriptive_name(self):
+        """返回格式规范的描述性名称"""
+        long_name = f"{self.year} {self.make} {self.model}"
+        return long_name.title()   # 有return返回的long_name.title()可以直接打印，也可以接住
+
+    def read_odometer(self):
+        """打印一个句子，指出汽车的行驶里程"""
+        print(f"This car has {self.odometer_reading} miles on it.")
+
+    def update_odometer(self, mileage):
+        """将里程表读数设置为给定的值"""
+        if mileage >= self.odometer_reading:
+            self.odometer_reading = mileage
+        else:
+            print("You can't roll back an odometer!")
+
+    def increment_odometer(self, miles):
+        """让里程表读数增加给定的量"""
+        self.odometer_reading += miles
+
+class ElectricCar(Car):
+    """电动汽车的独特之处"""
+
+    def __init__(self, make, model, year):
+        """
+        先初始化父类的属性，再初始化电动汽车特有的属性
+        """
+        super().__init__(make, model, year)   # 后面没":"，记得super()这要加"()"
+        # 这里在def __init__()下面要缩进
+        self.battery_size = 40
+
+    def describe_battery(self):
+        """打印一条描述电池容量的消息"""
+        print(f"This car has a {self.battery_size}-kwh battery.")
+
+my_leaf = ElectricCar('nisssan', 'leaf', 2024)
+print(my_leaf.get_descriptive_name())
+my_leaf.describe_battery()
+
+# 重写父类中的方法
+class ElectricCar(Car):
+    """电动汽车的独特之处"""
+
+    def __init__(self, make, model, year):
+        """
+        先初始化父类的属性，再初始化电动汽车特有的属性
+        """
+        super().__init__(make, model, year)   # 后面没":"，记得super()这要加"()"
+        # 这里在def __init__()下面要缩进
+        self.battery_size = 40
+
+    def describe_battery(self):
+        """打印一条描述电池容量的消息"""
+        print(f"This car has a {self.battery_size}-kwh battery.")
+    
+    def fill_gas_tank(self):
+        """电动汽车没有油箱"""
+        print(f"This car doesn't have a tank!")
+# 这时如果有人对电动汽车调用fill_gas_tank()方法,Python将忽略Car类中的fill_gas_tank()方法，转而运行上述代码
+# 父类没有、子类有，叫新增，子类实例只能跑子类的，父类实例压根没这个方法。
+# 父类有、子类也有且同名，叫重写，子类实例跑子类的，父类实例跑父类的，互不干扰。
+
+# 9.3.4 将实例用作属性
+# 发现自己给类添加了太多细节:属性和方法越来越多，文件越来越长。可能需要提取一部分，作为一个独立的类。
+# 将大型类拆分为多个协同工作的小类，这种方法称为组合(composition)
+class Car:
+    """一次模拟汽车的简单尝试"""
+
+    def __init__(self, make, model, year):
+        """初始化描述汽车的属性"""
+        self.make = make
+        self.model = model
+        self.year = year
+        self.odometer_reading = 0
+
+    def get_descriptive_name(self):
+        """返回格式规范的描述性名称"""
+        long_name = f"{self.year} {self.make} {self.model}"
+        return long_name.title()   # 有return返回的long_name.title()可以直接打印，也可以接住
+
+    def read_odometer(self):
+        """打印一个句子，指出汽车的行驶里程"""
+        print(f"This car has {self.odometer_reading} miles on it.")
+
+    def update_odometer(self, mileage):
+        """将里程表读数设置为给定的值"""
+        if mileage >= self.odometer_reading:
+            self.odometer_reading = mileage
+        else:
+            print("You can't roll back an odometer!")
+
+    def increment_odometer(self, miles):
+        """让里程表读数增加给定的量"""
+        self.odometer_reading += miles
+
+class Battery:   # 定义一个新类，没有继承任何类
+    """一次模拟电动汽车电池的简单尝试"""
+    def __init__(self, battery_size=40):
+        """初始化电池的属性"""
+        self.battery_size = battery_size   # 把默认属性存入实例如果没给它供值，那值就是40
+
+    def describe_battery(self):
+        """打印一条描述电池容量的信息"""
+        print(f"This car has a {self.battery_size}-kwh battery.")
+
+class ElectricCar(Car):
+    """电动汽车的独特之处"""
+
+    def __init__(self, make, model, year):
+        """
+        先初始化父类的属性，再初始化电动汽车特有的属性
+        """
+        super().__init__(make, model, year)   # 后面没":"，记得super()这要加"()"
+        # 这里在def __init__()下面要缩进
+        self.battery = Battery(30)   # 不加就是默认值，加了就是30,有几个形参就传几个，默认值可不传
+# 添加一个名为self.battery的属性,每当__init__()被调用时，都执行操作
+# 因此现在每个ElectricCar实例都包含一个自动创建的Battery实例，调用的是Battery.__init__()
+
+my_leaf = ElectricCar('nissan', 'leaf', 2024)   # 创建实例,实参填什么看自己的def __init__()
+print(my_leaf.get_descriptive_name())
+my_leaf.battery.describe_battery()
+
+# 现在再给Battery类添加一个方法，它根据电池容量报告汽车的续航里程
+class Car:
+    """一次模拟汽车的简单尝试"""
+
+    def __init__(self, make, model, year):
+        """初始化描述汽车的属性"""
+        self.make = make
+        self.model = model
+        self.year = year
+        self.odometer_reading = 0
+
+    def get_descriptive_name(self):
+        """返回格式规范的描述性名称"""
+        long_name = f"{self.year} {self.make} {self.model}"
+        return long_name.title()   # 有return返回的long_name.title()可以直接打印，也可以接住
+
+    def read_odometer(self):
+        """打印一个句子，指出汽车的行驶里程"""
+        print(f"This car has {self.odometer_reading} miles on it.")
+
+    def update_odometer(self, mileage):
+        """将里程表读数设置为给定的值"""
+        if mileage >= self.odometer_reading:
+            self.odometer_reading = mileage
+        else:
+            print("You can't roll back an odometer!")
+
+    def increment_odometer(self, miles):
+        """让里程表读数增加给定的量"""
+        self.odometer_reading += miles
+
+class Battery:   # 定义一个新类，没有继承任何类
+    """一次模拟电动汽车电池的简单尝试"""
+    def __init__(self, battery_size=40):
+        """初始化电池的属性"""
+        self.battery_size = battery_size   # 把默认属性存入实例如果没给它供值，那值就是40
+
+    def describe_battery(self):
+        """打印一条描述电池容量的信息"""
+        print(f"This car has a {self.battery_size}-kwh battery.")
+
+    def get_range(self):    # 新增方法
+        """打印一条信息，指出电池的续航里程"""
+        if self.battery_size == 40:
+            range = 150
+        elif self.battery_size == 65:
+            range = 225
+        print(f"This car can go about {range} miles on a full charge.")
+class ElectricCar(Car):
+    """电动汽车的独特之处"""
+
+    def __init__(self, make, model, year):
+        """
+        先初始化父类的属性，再初始化电动汽车特有的属性
+        """
+        super().__init__(make, model, year)   # 后面没":"，记得super()这要加"()"
+        # 这里在def __init__()下面要缩进
+        self.battery = Battery(65)   # 不加就是默认值，加了多少就是多少,有几个形参就传几个，默认值可不传
+
+my_leaf = ElectricCar('nissan', 'leaf', 2024)
+print(my_leaf.get_descriptive_name())
+my_leaf.battery.describe_battery()
+my_leaf.battery.get_range()   # 新增方法也通过汽车属性battery调用
+
+# 9.3.5 模拟实物
+# 略  --snip--
 
 
 

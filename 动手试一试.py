@@ -882,17 +882,176 @@ user_b = User('li', 'hua')
 user_a.describe_user()
 user_b.greet_user('free')   # 多余参数自己补
 
+# 2026.10.10
+# 练习9.4: 就餐人数
+class Restaurant:    # 分类
+    def __init__(self, restaurant_name, cuisine_type):   # 特殊方法
+        self.name = restaurant_name
+        self.type = cuisine_type
+        self.number_served = 0     # 增添属性存入实例，默认值为0,名称为number_served
+    def describe_restaurant(self):
+        print(f"The restaurant name is {self.name}.")   # 内部调用只要用self(变量)
+    def open_restaurant(self):
+        print("正在营业")
+    def set_number_served(self, number):
+        self.number_served = number
+    def increment_number_served(self, number):
+        self.number_served += number
+# 方法里能加新属性，能生效；但“标配属性”统一放 __init__，是为了让实例“生下来就完整、清楚、好查”，这样，方法里改变属性时，不会分不清存入变量名和函数方法变量名
+restaurant = Restaurant('mana', 'jiaozi')
+print(f"有{restaurant.number_served}人前来用餐")
+restaurant.set_number_served(32)    # 改变属性
+print(f"有{restaurant.number_served}人前来用餐")
+restaurant.increment_number_served(4)  # 增加人数(改变属性)
+print(f"有{restaurant.number_served}人前来用餐")
+# 练习9.5: 尝试登陆次数
+class User:
+    def __init__(self, first_name, last_name):
+        self.first = first_name
+        self.last = last_name
+        self.login_attempts = 0
+# __init__ 里写 print，一造实例就自动打印。但一般不这么写，打印放别的方法，你想打才打。基本就是来传参数的  
+    def describe_user(self):
+        print(f"Username is {self.first.title()} {self.last.title()} ")
+    
+    def greet_user(self, question):
+        print(f"Do you like {question}?")
+    
+    def increment_login_attempts(self):  # 不要用到别的参数就别写第二个形参
+        self.login_attempts += 1          # 将其属性+1，调用时写完整
+    
+    def reset_login_attempts(self):
+        self.login_attempts = 0
+
+a = User('ma', 'na')
+a.increment_login_attempts()
+a.increment_login_attempts()
+a.increment_login_attempts()
+print(a.login_attempts)
+a.reset_login_attempts()
+print(a.login_attempts)
+
+# 2026.10.11
+# 练习 9.6: 冰淇淋小店
+class Restaurant:    # 分类
+    def __init__(self, restaurant_name, cuisine_type):   # 特殊方法
+        self.name = restaurant_name
+        self.type = cuisine_type
+        self.number_served = 0     # 增添属性存入实例，默认值为0,名称为number_served
+    def describe_restaurant(self):
+        print(f"The restaurant name is {self.name}.")   # 内部调用只要用self(变量)
+    def open_restaurant(self):
+        print("正在营业")
+    def set_number_served(self, number):
+        self.number_served = number
+    def increment_number_served(self, number):
+        self.number_served += number
+
+class IceCreamStand(Restaurant):
+    def __init__(self, a , b):   # 形参变量随便改，位置对上，先管父类，自己要加加后面
+        super().__init__(cuisine_type=b, restaurant_name=a)  # 关键字，前面是父类形参变量，位置可变
+        self.flavors = ['奶油', '巧克力', '奶酪']  # 添加列表属性
+    def show(self):
+        text = f"We have {"、".join(self.flavors)} type!"
+        return text
+a = IceCreamStand('bob', 'jiaozi')  # 创建实例，导入实参
+print(a.show())   # 打印返回的值
+b = a.show()      # 也可以接住再打印
+print(b)
+# 练习 9.7: 管理员
+class User:
+    def __init__(self, first_name, last_name):
+        self.first = first_name
+        self.last = last_name
+        self.login_attempts = 0
+
+# __init__ 里写 print，一造实例就自动打印。但一般不这么写，打印放别的方法，你想打才打。基本就是来传参数的  
+    def describe_user(self):
+        print(f"Username is {self.first.title()} {self.last.title()} ")
+    
+    def greet_user(self, question):
+        print(f"Do you like {question}?")
+    
+    def increment_login_attempts(self):  # 不要用到别的参数就别写第二个形参
+        self.login_attempts += 1          # 将其属性+1，调用时写完整
+    
+    def reset_login_attempts(self):
+        self.login_attempts = 0
+
+class Admin(User):
+    def __init__(self, first_name, last_name):
+        super().__init__(first_name, last_name)
+        self.privileges = ['can add post', 'can delete post', 'can ban user']
+    
+    def show_pricileges(self):
+        print(f"Admin {"、".join(self.privileges)}")
+
+a = Admin('ma', 'na')
+a.show_pricileges()
+# 练习9.8: 权限
+class User:
+    def __init__(self, first_name, last_name):
+        self.first_name = first_name
+        self.last_name = last_name
 
 
+class Privileges:
+    def __init__(self):
+        self.privileges = [
+            'can add post',
+            'can delete post',
+            'can ban user',
+        ]   # 可以不加在__init__()中用默认值，直接后面自己加就行
+
+    def show_privileges(self):
+        print("管理员权限：")
+        for p in self.privileges:
+            print(f"- {p}")
 
 
+class Admin(User):
+    def __init__(self, first_name, last_name):
+        super().__init__(first_name, last_name)
+        # 关键：把 Privileges 实例装进来
+        self.privileges = Privileges()
 
 
+# 测试
+admin = Admin('li', 'hua')
+admin.privileges.show_privileges()
 
+# 一个类管一件事，需要别的功能就在里面装一个别的类的实例，用的时候点下去调用。
+# 继承表达“是一种”，组合表达“里面有一个”。
+# 哪个合适用哪个，不一定只用一种，通常两种一起用。
 
+# 练习9.9: 电池升级
+class Battery:   # 定义一个新类，没有继承任何类
+    """一次模拟电动汽车电池的简单尝试"""
+    def __init__(self, battery_size=40):
+        """初始化电池的属性"""
+        self.battery_size = battery_size   # 把默认属性存入实例如果没给它供值，那值就是40
 
+    def describe_battery(self):
+        """打印一条描述电池容量的信息"""
+        print(f"This car has a {self.battery_size}-kwh battery.")
 
+    def get_range(self):    # 新增方法
+        """打印一条信息，指出电池的续航里程"""
+        if self.battery_size == 40:
+            range = 150
+        elif self.battery_size == 65:
+            range = 225
+        print(f"This car can go about {range} miles on a full charge.")
 
+    def upgrade_battery(self):
+        """检查电池容量并设置"""
+        if self.battery_size < 65:
+            self.battery_size = 65   # "="是赋值(引用),"=="是比较
+
+car = Battery()   # 有默认值，可以先不填
+car.get_range()
+car.upgrade_battery()   # 检测并升级电池
+car.get_range()
 
 
 
