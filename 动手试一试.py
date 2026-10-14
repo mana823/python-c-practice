@@ -1053,6 +1053,110 @@ car.get_range()
 car.upgrade_battery()   # 检测并升级电池
 car.get_range()
 
+# 2026.10.14
+# 练习 9.10: 导入Restaurant类
+import restaurant
+a = restaurant.Restaurant('mana','no')
+a.describe_restaurant()
+# 练习 9.11: 导入Admin类
+import user   # 要用到几个类，其中类之间有实例调用
+a = user.Admin('ma', 'na')
+a.privileges.show_privileges()  # 因为self.privileges = Privileges() 先创建响应实例，在调用类中的方法
+# 练习 9.12: 多个模块
+import user2
+a = user2.Admin('ma', 'na')
+a.privileges.show_privileges()
+# 子类文件里，必须自己 from 父类文件 import 父类。详情见user2.py
+# 不能指望“第三个文件导入了”，子类就能用。
+# 练习 9.13: 骰子
+# import 尽量写在文件最上面，别写在函数里、函数之间。
+# 写在函数里，作用域只在那一个函数里，别的函数看不到。
+# 互相导入，还会循环导入报错。
+from random import choice, randint
+class Die:
+    def __init__(self, sides=6):
+        self.sides = sides
+
+    def roll_die(self):
+        a = randint(1, self.sides)  # self.sides不加引号，Python默认为变量去找值
+        return a
+# 字符串格式化，是在“字符串”里用的，字符串必须带引号。f-string 也是字符串，只是前面加了个 f。
+a = Die()
+print(a.roll_die())
+# 制作十面骰子
+a = Die(10)
+for _ in range(1, 21):   # 重复20次
+    print(a.roll_die())
+
+lists = [2 for _ in range(1, 32)]  # 这是将2装进列表31次，列表推导式表达式主要是循环对象，当然可以调用方法
+print(lists)
+
+# 练习9.14: 彩票
+from random import choice, randint
+a = [ 3, 23, 34, 532, 121, 345, 'fdl', 'r3fk','ad', 'fd']
+# c = choice(a)
+# b = [c for _ in range(1,5)]  <---这样每次结果一样，错误
+# print(b)
+b = []
+for _ in range(1,4):
+    c = choice(a)
+    b.append(c)
+print(b)
+print(f"彩票顺序依次是{'、'.join(map(str, b))}")   # 因为含字符串数字，单纯join只能作用于字符串
+print(f"彩票顺序依次是{'、'.join(str(x) for x in b)}")
+# map(函数, 可迭代对象) = 把“函数”挨个套到每个元素上。
+# 函数是“转换规则”，可迭代对象是“被转换的东西”。
+
+# 练习 9.15: 彩票分析
+# while Ture写法:
+number = 0
+
+while True:
+    d = []
+    for _ in range(1,4):
+        e = choice(a)
+        d.append(e)
+    
+    number += 1
+    if d != b:
+        print(f'已经尝试暴力破解彩票{number}次!')
+    else:
+        print(f'破解成功，消耗{number}次!')
+        break
+# while 条件判断
+number = 0
+
+d = []
+for _ in range(1, 4):
+    d.append(choice(a))
+
+while d != b:
+    number += 1
+    print(f'已经尝试暴力破解彩票{number}次!')
+    d = []
+    for _ in range(1, 4):
+        d.append(choice(a))
+
+number += 1    # 最后这一次成功，也要算进去
+print(f'破解成功，消耗{number}次!')
+# 或者改初始值，不在最后加
+number = 1    # 第一次抽，就算一次
+
+d = []
+for _ in range(1, 4):
+    d.append(choice(a))
+
+while d != b:
+    print(f'已经尝试暴力破解彩票{number}次!')
+    number += 1
+    d = []
+    for _ in range(1, 4):
+        d.append(choice(a))
+
+print(f'破解成功，消耗{number}次!')
+
+# 练习9.16: Python 3 Module of the Week
+
 
 
 
