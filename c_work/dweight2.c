@@ -6,11 +6,16 @@ int main(void)
 {
     int height, length, width, volume,  weight;
     printf("Enter height of box: ");
-    scanf("%d\n", &height);   // <-- 因为要打印的语句，这个提示词要和scanf结合一起，更加清晰易懂。之后再换行。
+    scanf("%d", &height);   // <-- scanf不负责换行，不过输入数字后你要回车，终端就执行换行了(并非scanf执行)
     printf("Enter length of box: ");
-    scanf("%d\n", &length);
+    scanf("%d", &length);   // <-- 和Python中input一样，都是强行暂停目前代码运行，等用户输入
+// 只有一种情况：输入流里已经有现成的数据了。
+// 比如，你在前面输入了 12 34，但 scanf 第一次只读了 12，那个 34 还残留在输入缓冲区里。
+// 这时候你执行第二个 scanf，它一看缓冲区里有 34，直接拿走，就不等你了
+
+// scanf 里的 \n 不是“换行”，而是“跳过空白字符直到遇到非空白字符”。它会导致程序“假死”或“吃错数据”。
     printf("Enter width of box: ");
-    scanf("%d\n", &width);
+    scanf("%d", &width);
     volume = height * length * width;
     weight = (volume + 165) / 166;
 
