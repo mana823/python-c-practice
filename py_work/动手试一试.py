@@ -1158,12 +1158,41 @@ print(f'破解成功，消耗{number}次!')
 # 练习9.16: Python 3 Module of the Week
 
 
+# 2026.10.19
+# 练习10.1: Python学习笔记
+from pathlib import Path
+path = Path('learning_python.txt')
+contents = path.read_text(encoding='utf-8')
+print(f"{contents}\n" * 2)
+print(repr(contents * 2))   # 可以将换行符打出来
+print(repr("我是最后一行"))  # 打印不出来是因为这里面本就没有换行符，都是加在后面的
+# 【实验结论：关于 * 和 print 的换行逻辑】
+# 1. 字符串 * 2 只是在内存中复制并拼接，绝不产生任何中间换行符。
+# 2. print() 默认自带的 end="\n"，只会在整个字符串的最末尾追加一个换行符。
+# 3. 如果你看到两段文字“粘连”了(此时中间的换行符不会添加)，那是 * 造成的；如果你看到最后有一行空，那是 print 造成的(加的换行符)。
+lines = contents.splitlines()  # 已经把\n拿了，再来多少空的也没意义
+pi_string = ''
+for line in lines:
+    pi_string += line
+pi_string = pi_string
+print(pi_string)
+# 回车几行，文本后就有几个\n
 
+# 练习 10.2: C语言学习笔记
+from pathlib import Path
+path = Path('learning_python.txt')
+contents = path.read_text(encoding='utf-8')
+lines = contents.splitlines()  # 已经把\n拿了，再来多少空的也没意义
+pi_string = ''
+for line in lines:
+    pi_string += line.replace('Python', 'C语言')   # 逐行替换
+print(pi_string)
 
-
-
-
-
+# 练习 10.3: 简化代码
+# 可以将lines = contents.splitlines()
+#       for line in lines:
+# 替换为:
+#       for line in contents.splitlines()   <-- 也就是不带变量了
 
 
 

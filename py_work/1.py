@@ -1,5 +1,7 @@
 # name = 'ada lovelace'
 from dataclasses import field
+from importlib.resources import contents
+import pathlib
 
 
 name = 'ada lovelace'
@@ -2195,8 +2197,99 @@ print(first_up)
 # · 承上启下：指出下一章（第 10 章）将学习文件和异常，让程序能够持久化保存数据和优雅地处理错误。
 
 
+# 2026.10.19
+# 第十章:文件和异常
+# 10.1: 读取文件
+
+# 10.1.1: 读取文件的全部内容
+# 要读取文件，许要一个包含多干行文本的文件。下面创建一个文件，包含精确到小数点后30位的圆周率值，且在小数点后每10位处换行:
+# pi_digits.txt   <-- 已保存为同一目录,在这个文件夹里面打开
+# 3.1415926535
+#   8979323846
+#   2643383279
+
+# 下面的程序打开并读取这个文件，再将其内容显示到屏幕上:
+from pathlib import Path    # 标准库模块，首先从中导入Path类，Path对象指向一个文件，可以做很多事，核实文件存在，读取内容，将新数据写入等。
+path = Path('pi_digits.txt')  # 这里创建一个表示文件pi_digits.txt的Path对象，并赋值给变量path
+contents = path.read_text()   # 由于这个文件与当前编写的.py文件位于同一个目录中，因此Path只需要知道其文件名就能访问它
+print(contents)   # 相比与源文件，末尾多输出了一行，因为read_text()到达文件末尾时会返回一个空字符串，其会被显示一个空行，可以对contents调用rstrip()(已经被修复，现在的版本已经不会再多一行了)
+# 路径(path)指的是文件或文件夹在系统的准确位置。pathlib模块，让我们轻松在各种操作系统中处理文件和目录。提供功能的模块通常称为库(librery)
+# 注意，VS Code会在最近打开的文件夹中查找文件，因此需要先打开本章程序所在的文件夹
+
+# 相对文件路径和绝对文件路径
+# 相对路径让Python到相对于当前运行程序的所在目录的指定位置去查找。若filename.txt位于python_work中的text_files中，则如下:
+# path = Path('text_files/filename.txt')  # 路径之间，使用/隔开每一层级(Windows系统使用\)
+
+# 绝对路径将文件精准位置告诉Python，在相对路径行不通的时候，可以使用绝对路径。假如text.files并不在python_work中，则向Path传递相对路径行不通，因为只能在python_work(当前文件夹)中寻找
+# 绝对路径比相对路径更长，因为它们以系统的根文件为起点:
+# path = Path('/home/eric/data_files/text_files/filename.txt')
+# 使用绝对路径，可以读取系统中任何地方的文件。
+
+# 注意: 在显示文件路径时，Windows系统使用反斜杠(\)，而不是斜杠(/)。但在代码中始终用斜杠，在与你或其他用户的系统交互时，pathlib库会自动使用正确的路径表达方式。
 
 
+# 10.1.3 访问文件中的各行
+# 可以使用splitlines()方法将冗长的字符串转换为一系列行，在使用for循环以每次一行的方式检查文件中的各行:
+from pathlib import Path
+path = Path('pi_digits.txt')
+contents = path.read_text()
+
+lines = contents.splitlines()   # sokutkubes()方法返回一个列表，其中包含文件的所有行，把每一行切割下来并且作为列表中的一个元素
+for line in lines:
+    print(line)
+# 【splitlines() 的底层本质】
+# 1. 切割标准：只认换行符（\n, \r\n, \r 等跨平台换行），遇到就切。“其实就是各个系统的换行符不一样，有的夹带私货，它能识别照样切。”
+# 2. 去除内容：只吃掉换行符本身。
+# 3. 保留内容：行首、行尾的空格、制表符（\t）【绝对原样保留】。
+# 4. 如果要去掉行首尾的空白字符，必须手动套用 .strip() 或 .strip('\t')。
+
+# 【\r (Carriage Return) 的本质】
+# 1. 动作：将光标移动到当前行的最开头（不换行）。
+# 2. 跨平台：Windows 使用 \r\n 换行；Linux/macOS 使用 \n。
+# 3. 进度条原理：结合 print(..., end="")，用 \r 回到行首覆盖刷新。
+# 4. 安防警告：恶意脚本利用 \r 覆盖屏幕输出，伪造密码提示框；Web 漏洞中常见 CRLF 注入。
 
 
+# 10.1.4 使用文件的内容
+from pathlib import Path
+path = Path('pi_digits.txt')
+contents = path.read_text()
 
+lines = contents.splitlines()
+pi_string = ''
+for line in lines:
+    pi_string += line
+print(pi_string)        # 打印字符串
+print(len(pi_string))   # 打印长度
+
+from pathlib import Path
+path = Path('pi_digits.txt')
+contents = path.read_text()
+
+lines = contents.splitlines()
+pi_string = ''
+for line in lines:
+    pi_string += line.lstrip()  # 删掉左边的空格
+print(pi_string)        # 打印字符串
+print(len(pi_string))   # 打印长度
+
+# 注意: 在读取文本时，Python将其中的所有文本都解释为字符串。如果读的是数，要将其作为数值使用，用int()或float()
+
+# 10.1.5 包含100万位的大型文件
+from pathlib import Path
+path = Path('pi_million_digits.txt')   # 导入文件
+contents = path.read_text()     # 读取文本,调用类里面的函数
+lines = contents.splitlines()
+pi_string = ''
+for line in lines:
+    pi_string += line.lstrip()
+print(f"{pi_string[:52]}...")
+print(len(pi_string))
+
+# 10.1.6 圆周率包含你的生日吗
+# 可以先将生日表示为一个由数字组成的字符串再检查这个字符串是否位于pi_string中
+# birthday = input("Enter your birthday, in the form mmddyy: ")
+# if birthday in pi_string:
+#     print("Your ...")
+# else:
+#     print("No!")
