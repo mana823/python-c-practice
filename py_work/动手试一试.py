@@ -1195,4 +1195,163 @@ print(pi_string)
 #       for line in contents.splitlines()   <-- 也就是不带变量了
 
 
+# 2026.10.28
+# 练习10.4: 访客
+from pathlib import Path
+path = Path('guest.txt')
+# name = input("输入你的名字:")
+# path.write_text(name)
 
+# 练习10.5: 访客簿
+# names = ''
+# while True:
+#     name = input("输入你的名字: (eixt退出)")
+#     if name == 'eixt':
+#         break
+#     names += name + '\n'      # 每次都是重新写内存
+# path.write_text(names)
+# print(names)
+# print(path.read_text())
+
+# 练习10.6: 加法运算
+# try:
+#     a, b = map(int, input("Input two-number: (用空字符隔开)").split())   # 转整型才能让输入字母以及其他符号报错
+    
+# except ValueError:
+#     print("They aren't int.")
+# else:
+#     c = a + b
+#     print(f"Sum is {c}!")
+
+# 练习10.7: 加法计算器
+# while True:
+#     try:
+#         a, b = map(int, input("Input two-number: (用空字符(enter会直接提交)隔开)").split())   # 转整型才能让输入字母以及其他符号报错    
+        
+#     except ValueError:
+#         print("They aren't int!")
+#         print("What can I say?")
+#     else:
+#         c = a + b
+#         print(f"Sum is {c}!")
+#         break
+
+
+######### 有input都注释 ##########
+
+
+# while True:
+#     try:
+#         # 第一步：先拿到字符串，不急着拆包
+#         user_input = input("Input two-number (用空字符(enter会直接提交)隔开): ").strip()
+        
+#         if not user_input:  # 处理直接按回车的情况
+#             print("What? 你什么都没输啊！")
+#             continue # 重新循环
+
+#     # input 回车后不会留\n在缓冲区
+
+#         # 第二步：切分并检查数量
+#         parts = user_input.split()   # 切除空白换行等，返回列表
+#         if len(parts) < 2:
+#             print("Two numbers! 你只输入了一个数！")
+#             continue
+#         elif len(parts) > 2:
+#             print("Too many numbers! 你输多了！")
+#             continue
+            
+#         # 第三步：确定有两个数了，再尝试转整数
+#         try:
+#             a = int(parts[0])
+#             b = int(parts[1])
+#             c = a + b
+#         except ValueError:
+#             print("They aren't int! 你输入了不可告人的字母或符号！")
+#             print("What can I say?")
+#             continue
+
+#     except Exception as e:
+#         # 终极兜底，防止任何意外的系统级错误
+#         print(f"未知错误: {e}")
+#         continue
+#     else:
+#         print(f"Sum is {c}!")
+#         break
+
+# 练习10.8: 猫和狗
+from pathlib import Path
+def path(self):
+    path = Path(self)   # Path 只是画图纸（纯内存），read/write/mkdir 才是动土（碰硬盘）。
+    try:
+        path.read_text(encoding='utf-8')
+    except FileNotFoundError:
+        print("文件不存在")
+    else:
+        print(path.read_text(encoding='utf-8'))
+path('cats.txt')
+path('dogs.txt')
+
+# 练习10.9: 静默的猫和狗
+from pathlib import Path
+def path_(self):
+    path = Path(self)   # Path 只是画图纸（纯内存），read/write/mkdir 才是动土（碰硬盘）。
+    try:
+        path.read_text(encoding='utf-8')
+    except FileNotFoundError:
+        pass
+    else:
+        print(path.read_text(encoding='utf-8'))
+path_('cats.txt')
+path_('dogs.txt')
+
+
+# 练习10.10: 常见单词
+from pathlib import Path
+
+path = Path('alice.txt')
+# 1. 读取并按空白切分成列表
+contents = path.read_text(encoding='utf-8').split()
+
+# 2. 直接用 count() 统计，根本不用把几万个单词打印出来
+count_the = contents.count('the')     # count可以用来确定特定的单词或短语在字符串中出现了多少次
+count_alice = contents.count('Alice')  # 相应的字符串转换(列表用不了，得先转换，map、join)
+
+# 3. 只打印结果！
+print(f"'the' 出现的次数: {count_the}")
+print(f"'Alice' 出现的次数: {count_alice}")
+
+
+"""
+============================================================================
+【极客复盘：count() 底层分野与大数据文本统计防坑指南】
+============================================================================
+1. 逻辑本质：
+   - 字符串的 count()：找的是“模式（子串）”，在连续的字符流里滑动匹配。
+   - 列表的 count()：找的是“元素（对象）”，在列表里挨个比对是否有完全相同的对象。
+
+2. 底层行为：
+   - str.count(sub)：底层相当于 C 语言的 strstr 连续调用，一个字节一个字节地
+     比对子串。只要连在一起符合，就算一次（比如 "there" 里也能数出 "the"）。
+   - list.count(item)：底层是一个 C 语言的 for 循环，顺着指针遍历列表，用 == 
+     去比对每个元素。列表里的元素是“整体”，比如 ["the,", "The"] 里面找 "the"
+     绝对找不到。
+
+3. 工程/安全铁律：
+   - 终端 I/O 性能灾难：绝对不要在大文件（如几千上万行）处理时，直接 print(列表)。
+     终端渲染和标准输出缓冲区的开销，会瞬间卡死你的程序，甚至引发内存耗尽（DoS）。
+   - 数据清洗必须前置：文本切分后，如果想统计词频，必须先用 .lower() 统一大小写，
+     并且用 replace() 剔除标点符号（string.punctuation），否则统计结果全是错的。
+
+4. 坑与反例：
+   - 坑一：contents = read_text().split(); contents.count('the') 
+     如果原文有 "The" 或者 "the."，由于大小写和标点干扰，count 会漏掉大量数据。
+   - 坑二：str 的 count 会“误伤”。比如字符串 "there is a the" 用字符串 count('the')，
+     结果会是 2（把 there 里的 the 也算进去了），这叫子串误报。
+
+5. [性能/微架构备注（降维打击）]：
+   - 用 list.count() 去统计一个几万元素的列表，时间复杂度是 O(N^2)，因为每次
+     count 都要从头遍历一遍列表。
+   - 正确姿势：使用 collections.Counter(contents)。它底层是哈希表（Hash），
+     一次遍历（O(N)）即可完成所有词的频率统计，且在内存允许的情况下极快。
+============================================================================
+"""

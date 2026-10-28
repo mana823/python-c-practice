@@ -1675,3 +1675,321 @@ print(len(pi_string))
 #      读完不重置会一直停在末尾，必须手动 fseek(fp, 0, SEEK_SET) 归零。
 #    - Python：read_text() 全自动包揽（每次都重新打开、关闭），seek(0) 代替 fseek。
 # ! ============================================================================
+
+
+# ! ============================================================================
+# ! 【10.2 写入文件】
+# ! ============================================================================
+# 保存数据最简单的是写入文件
+
+# ? 10.2.1 用write_text()写入一行
+from pathlib import Path
+path = Path('programming.txt')
+path.write_text('I love programming.')
+print(path.read_text())
+# ! 注意:Python只能将字符串写入文本文件。如果要将数值存储到文本文件，必须先使用函数str()将其转换为字符串格式
+
+# ? 10.2.2 写入多行
+# write_text() 也会确保打开和关闭
+# 写入多行先创建一个字符串(其中包含要写入文件的全部内容),再调用write_text()并将这个字符串传递给它。
+contents = "I love programming.\n"
+contents += "I love creating new games.\n"
+contents += "I also love working with data.\n"
+path.write_text(contents)
+print(path.read_text())
+
+# ! 谨慎使用write_text()方法，在对path对象调用该方法时，如指定文件已存在，write_text()将删除其内容，并将指定的内容写入。后面介绍用pathlib检查文件存在
+# ! 而用Path()也不会帮你自动创建文件，那就是自动删除
+
+# ! 【文件写入避坑速查：write_text 的底裤】
+# 1. 默认清空：write_text() 底层就是 open('w')，只要文件存在，内容直接清零（Truncate），连渣都不剩。
+# 2. 不建目录：它不会帮你铺路。如果路径里的文件夹不存在，直接抛 FileNotFoundError（妥妥的 DoS 漏洞）。
+# 3. 防弹姿势：
+#    - 追加模式：open('a') 或者 Path.open('a')
+#    - 防覆盖模式：open('x')，文件存在直接报错保命
+#    - 建文件夹：p.parent.mkdir(parents=True, exist_ok=True)
+
+
+# ! ============================================================================
+# ! 【极客复盘：Python 可变与不可变对象的内存底裤】
+# ! ============================================================================
+# * 1. 逻辑本质：
+#    Python 的变量根本不是装数据的盒子，而是贴在内存对象上的“门牌号”（C 语言里的指针）。
+#    判断对象可不可变，就看修改它的时候，门牌号（id()）变不变：
+#    - 不可变（Immutable）：想改？直接换个新房子，门牌号作废。
+#    - 可变（Mutable）：原地拉屎，不管怎么扩容，门牌号绝对不换。
+# 
+# ? 2. 底层行为（降维打击）：
+#    - 不可变对象（int, str, tuple, bytes）：
+#      底层相当于 C 语言里用 const 锁死的内存，或者存放于常量池（冷库）。
+#      你写 a = 10; a += 1，底层其实是销毁了 a 到 10 的绑定，重新申请了一块装了 11 的内存。
+#    - 可变对象（list, dict, set）：
+#      底层是个结构体，里面有类似 ob_item（指向连续内存的指针）和 allocated（容量）。
+#      你写 append 操作，只要 capacity 没满，就直接往案板内存里写；满了就用 realloc 重新找块大内存，
+#      把老数据搬家过去，再 free 掉老的，但结构体本身的地址（门牌号）不变。
+# 
+# ! 3. 工程/安全铁律：
+#    - 函数传参：传的都是“门牌号”。把可变对象传进函数，函数里面一改，外面全跟着烂（传引用副作用）。
+#    - 默认参数：绝对、千万、不允许用可变对象（如 list=[]）做函数默认参数！
+#    - 字典的 Key：只能用不可变对象（如 str, int, tuple）。因为哈希值一旦算出来，如果对象可变导致哈希变了，
+#      哈希表直接崩溃，攻击者可以用这个特性搞哈希碰撞拒绝服务（DoS）。
+# 
+# ! 4. 坑与反例：
+#    - 【经典陷阱】默认参数连环塌方：
+#      def add_item(item, box=[]):
+#          box.append(item)
+#          return box
+#      底层真相：[] 这个对象在函数定义（程序加载）时就创建好了，存在堆里。每次调用不传 box，
+#      拿到的都是同一个门牌号，导致数据被不断污染。
+#    - 【浅不可变陷阱】tuple 只是浅层不可变：
+#      t = (1, [2, 3])，你不能把 [2,3] 换掉，但你可以 t[1].append(4)。
+#      底裤：tuple 保证的是它自己内部的指针地址不变，管不了指针指向的内存里装的是什么。
+# 
+# * 5. [性能备注]：
+#    - 在循环里用字符串 += 拼接是找死（时间 O(n^2)），底层在疯狂 malloc 和拷贝。
+#    - 正确姿势：用 list.append 收集碎片，最后 "".join()。
+#    - 用不可变对象做字典的 key，查表时间复杂度 O(1)，底层直接拿哈希值去步长偏移，这才是性能极致。
+# ! ============================================================================
+
+# >> 下面是防弹代码演示：
+def add_item_safe(item, box=None):
+    """
+    防弹级默认参数：用不可变对象 None 做卫语句拦截
+    """
+    if box is None:
+        box = []
+    box.append(item)
+    return box
+
+if __name__ == "__main__":
+    # 测试一下门牌号
+    a = "hello"
+    print(f"不可变对象原地址: {id(a)}")
+    a += " world"
+    print(f"不可变对象改后地址: {id(a)}  <-- 换了！")
+
+    b = [1, 2, 3]
+    print(f"可变对象原地址: {id(b)}")
+    b.append(4)
+    print(f"可变对象改后地址: {id(b)}  <-- 没换！")
+
+
+# ! ============================================================================
+# ! 【极客复盘：Python 模块入口与字典哈希底裤】
+# ! ============================================================================
+# * 1. 逻辑本质：
+#    - if __name__ == "__main__": 是模块级别的“主程序入口隔离锁”。
+#    - 字典（dict）本质是个哈希表，Key 必须不可变，否则底层寻址崩溃。
+# 
+# ? 2. 底层行为：
+#    - 模块加载：Python 解释器在内存中加载 .py 文件时，会给每个模块对象分配
+#      __name__ 属性。主动运行（python a.py）时为 "__main__"，被 import 时为 "a"。
+#    - 字典寻址：底层基于 C 语言的哈希表（Hash Table）。通过 hash(Key) 计算
+#      哈希值，再对数组长度取模（或位运算），直接通过偏移量定位内存槽位（O(1)）。
+# 
+# ! 3. 工程/安全铁律：
+#    - 模块隔离：永远把测试代码或独立执行的逻辑塞进 if __name__ 代码块里，
+#      防止模块被 import 时产生副作用（这等同于 C 语言里的 main 函数）。
+#    - 字典 Key 约束：Key 必须不可变（str, int, tuple 等）。如果 Key 内容变了
+#      导致 Hash 值变了，哈希表就找不到原来的内存槽位了，数据直接丢失或异常。
+# 
+# ! 4. 坑与反例：
+#    - 【哈希崩溃】如果硬把 list 塞进字典当 Key（通过魔法手段绕过检查），
+#      修改 list 后再去查字典，不仅查不到，还可能引发底层 C 结构体的内存越界。
+#    - 【HashDoS 漏洞】攻击者构造几十万个“内容不同但 Hash 值完全一样”的恶意
+#      Key（哈希碰撞）。哈希表退化成单向链表（O(n)），查询一个不存在的键会遍历
+#      所有节点，瞬间吃满 CPU，导致服务器拒绝服务（DoS）。
+# 
+# * 5. [性能/微架构备注]：
+#    - 字典的 O(1) 优势来自内存直接偏移读取（L1/L2 缓存命中率极高）。
+#    - 尽量减少哈希碰撞（Python 会动态扩容 ob_table 数组），扩容底层就是 C 的
+#      realloc 重新申请内存并搬运数据，频繁增删会导致性能抖动。
+# ! ============================================================================
+
+# >> 防弹代码演示：
+# 1. 模块入口演示（隔离测试代码）
+def core_logic():
+    return "业务逻辑"
+
+# 当别人 import 这个文件时，下面的测试代码不会执行；
+# 只有直接 python test.py 运行时，才会进入。
+if __name__ == "__main__":
+    print("此代码仅在作为主程序运行时执行，安全隔离，防止后门自动触发。")
+# >> 主要是为了自己测试，防止别人加载时自动执行
+
+# 2. 字典 Hash 测试（不可变对象才是好Key）
+def hash_demo():
+    # 正常操作：用不可变的字符串或元组当 Key
+    safe_dict = {("admin", 1): "权限已授予"} 
+    print(f"元组作为Key哈希值: {hash(('admin', 1))}")
+    
+    # 假设你手滑用了一个列表（其实会直接报错 TypeError）
+    # bad_dict = {[1, 2]: "危险"}  # 报错：unhashable type: 'list'
+    
+    # 攻击者视角演示（哈希碰撞）：
+    # 哪怕两个不同的字符串，底层算出来的哈希值也有可能一样（概率极低）
+    # 但恶意攻击者可以专门构造这类数据，填满字典。
+
+if __name__ == "__main__":
+    hash_demo()
+
+
+# ! ============================================================================
+# ! 【10.3 异常处理】
+# ! ============================================================================
+# Python使用称为异常的特殊对象来管理程序执行期间发生的错误。如果编写了处理错误异常的代码，程序将继续运行，如没有，程序停止，并显示traceback
+# 异常是由try-except代码块处理的，指定操作，同时告诉Python在发生异常应该怎么办
+
+# ? 10.3.1 处理ZeroDivisionError异常 & 10.3.2 使用try-except代码块
+try:
+    print(5/0)    # 无错则顺利执行
+except ZeroDivisionError:   # 有错误且引发 相应异常(错误相匹配)，执行下面的代码(前提是与前面的try匹配)
+    print("You can't divide by zero!")
+
+# ! 【Python 异常处理避坑速查：try...except 底裤】
+# ? 1. 底层机制：异常匹配本质是 C 语言层面的“类型指针比对”和“继承链遍历”。
+#    匹配不上，解释器继续往外抛，直到进程崩溃。
+# ! 2. 绝对不写：except: (裸奔)
+#    等同抓取 BaseException，会把 KeyboardInterrupt (Ctrl+C) 和 SystemExit 全吞掉，
+#    导致程序卡死，连安全退出的机会都没有（完美 DoS 漏洞）。
+# ! 3. 严禁大包大揽：except Exception:
+#    看似安全，实则“异常吞噬”。会掩盖真正的连接断开、内存溢出等错误，引发后续连锁雪崩。
+# ! 4. 顺序铁律：子类必须写在父类前面。
+#    except Exception: 写前面，后面的 except ValueError: 直接变成死代码。
+# * 5. 防弹姿势（Fail-Fast + 精准打击）：
+#    try:
+#        ...
+#    except ValueError:
+#        处理特定错误
+#    except Exception as e:
+#        traceback.print_exc() # 必须留证据
+#        raise e               # 必须往外抛，绝不让脏数据继续跑！
+# >> 外抛，就是当前函数处理不了这个雷，顺着调用栈把包袱往上甩给调用者，直到有人接盘（catch）或直接炸掉整个进程。
+
+
+# ? 10.3.3 使用异常避免崩溃 & 10.3.4 else代码块
+# print("Give me two numbers, and I'll divide them.")
+# print("Enter 'q' to quit.")
+# while True:
+#     first_number = input("\nFirst number: ")
+#     if first_number == 'q':
+#         break
+#     second_number = input("\nSecond number: ")
+#     if second_number == 'q':
+#         break
+#     try:
+#         answer = int(first_number) / int(second_number)     # input里是字符串，先转换
+#     except ZeroDivisionError:     # 注意except最后面有冒号
+#         print("You can't dicide by 0!")
+#     else:
+#         print(answer)
+# * 将有可能错误的代码放进try里面，try代码成功执行才需运行的代码放进else里面，  else与except匹配
+# ! 一般try里面放可能错误的代码，如不用else直接写在try后面，会引起更多麻烦，可能后面的本来正常程序因为这个错误程序而错误，后面的except很多错误会掩盖真实错误
+
+
+# ? 处理FileNotFoundError异常
+# 尝试读取一个不存在的文件
+from pathlib import Path
+path = Path('alice.txt')  # 文件不存在
+try:
+    contents = path.read_text(encoding='utf-8')     # 一定要清楚什么时候可能错，再去放到try下面
+except FileNotFoundError:
+    print(f"Sorry, the file {path} does not exist.")
+
+
+# ! ============================================================================
+# ! 【极客复盘：编码/解码底裤与文件/网络 I/O 易错点】
+# ! ============================================================================
+# * 1. 逻辑本质：
+#    - str（字符串）：人类看的 Unicode 码点，Python 内部的文本对象。
+#    - bytes（字节串）：机器存的原始 0 和 1，硬盘和网卡唯一认识的格式。
+#    - Encode（编码）：str -> bytes（人类话变机器话）。
+#    - Decode（解码）：bytes -> str（机器话变人类话）。
+# 
+# ? 2. 底层行为与 API 阴阳面：
+#    - 文件读写（保姆级）：
+#      - read_text()：底层相当于 open('rb') 读入 bytes，然后自动调用 decode()。
+#      - write_text()：底层自动调用 encode() 转为 bytes，再写入磁盘。
+#      - 注：参数 encoding='utf-8' 里的 encoding 是名词（密码本），不是动词（执行加密）。
+#    - 网络 Socket（原始裸奔）：
+#      - send()：只收 bytes。必须手动 msg.encode('utf-8')，否则直接报 TypeError。
+#      - recv()：只吐 bytes。必须手动 data.decode('utf-8')，才能变成字符串打印。
+# 
+# ! 3. 工程/安全铁律：
+#    - 永远不要信任网络传过来的 bytes。如果对端发的是 GBK，你拿 UTF-8 去 decode，
+#      当场崩溃（UnicodeDecodeError），黑客可借此打 DoS（拒绝服务）。
+#    - 网络收包后，decode() 必须套在 try...except UnicodeDecodeError 里面，
+#      或者使用 errors='ignore' / 'replace' 容错。
+# 
+# ! 4. 坑与反例（TCP 粘包与半包）：
+#    - 灾难场景：TCP 是流式协议。对端发“你好”（3个字节），你的 recv(1024) 
+#      可能只收到了前 2 个字节。
+#    - 物理后果：强行对这半个字符 decode('utf-8')，底层发现字节长度不对，
+#      解不出完整的 Unicode，直接抛异常，程序暴毙。
+#    - 防御：必须自定义应用层协议（如先收 4 字节定长 Header 标出长度，再按长度接收 Payload），
+#      收全了再 decode。
+# 
+# ? 5. [降维对比 C 语言]：
+#    - C 语言里没有 str 和 bytes 的区分。char 数组（或指针）就是一切。
+#    - 文件读、网络读，读出来的全是 char 裸字节。C 语言库不会自动帮你 decode，
+#      全是 0101 排列。
+#    - 需要解码时，C 程序员得手动调 iconv 等底层库，把 GBK 字节转成 UTF-8 字节。
+#      因此 C 语言天生没有 Python 的“自动解码”报错烦恼，但需要极强的人工边界控制。
+# ! ============================================================================
+
+
+# ? 10.3.6 分析文本
+from pathlib import Path
+path = Path('alice.txt')
+try:
+    contents = path.read_text(encoding='utf-8')
+except FileNotFoundError:
+    print(f"Sorry, the file {path} does not exist.")
+else:
+    # 计算文件大致包含多少个单词
+    words = contents.split()
+    num_works = len(words)
+    print(f"The file {path} has about {num_works} words.")
+# ! · splitlines()：只看换行符。哪怕这行只有空气，它也会切出一个 '' 填进列表里，保持行号对应。
+# ! · split()：默认是吸尘器，把连续的空格和换行全吸走，不产生任何空元素。
+
+
+# ? 10.3.7 使用多个文件
+from pathlib import Path
+def count_words(path):
+    '''计算一个文件夹大致包含多少个单词'''
+    try:       # 避免出现traceback
+        contents = path.read_text(encoding='utf-8')
+    except FileNotFoundError:
+        print("Sorry, the file {path} does not exist.")
+    else:
+        # 计算文件大致包含多少个单词
+        words = contents.split()
+        num_works = len(words)
+        print(f"The file {path} has about {num_works} words.")
+
+path = Path('alice.txt')
+count_words(path)
+
+filenames = ['alice.txt', 'little_women.txt', 'moby_dick.txt']
+for filename in filenames:
+    path = Path(filename)
+    count_words(path)
+
+
+# ? 10.3.8 静默失败
+# def count_words(path):
+#     try:
+#         --snip--
+#     except FileNotFoundError:
+#         pass         <-- 注意这个pass，告诉Python什么都不做，继续执行后面的程序，也就是这一分支
+#     else:
+#         --snip--
+# * pass也可以当成一个占位符，提醒你在程序的某个地方什么都没做，而且以后也许要在这里做些什么
+
+
+# ? 10.3.9 决定报告哪些错误
+
+
+# ? 10.4 存储数据
+# 一种简单的方法是使用模块json来存储数据，让我们将简单的Python数据结构转换为JSON格式的字符串，并在程序再次运行时从文件中加载数据
