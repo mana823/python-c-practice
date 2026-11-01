@@ -3382,7 +3382,7 @@ int main(void)      <-- 主程序，main返回整数值(int)，main内无参数(
 // 读取long double 类型的值时，在e、f或g前放置字母L:
 //    long double ld;
 //    scanf("%Lf", &d);
-//    printf("%Lf", %d);
+//    printf("%Lf", ld);
 
 
 
@@ -3455,7 +3455,7 @@ int main(void)      <-- 主程序，main返回整数值(int)，main内无参数(
 //    signed char sch;
 //    unsigned char uch;
 // 可移植性技巧: 不要假设char类型默认为signed或unsigned。如果有区别，用signed char或unsigned char 代替char
-//  C99中的_Boll型(5.2节)是无符号整数类型。
+//  C99中的_Bool型(5.2节)是无符号整数类型。
 
 
 
